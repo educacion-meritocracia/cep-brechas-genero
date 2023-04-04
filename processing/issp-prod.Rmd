@@ -1,0 +1,633 @@
+---
+title: "issp-prod"
+date: "`r format(Sys.time(), '%A %d %B %Y %X')`"
+output:
+  bookdown::html_document2:
+    number_sections: true
+    toc: true
+    toc_float:
+        collapsed: false
+    toc_depth: 2
+    code_folding: "hide"
+editor_options:
+  chunk_output_type: console
+---
+
+# Cargar paquetes
+
+```{r}
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE, 
+                      cache = FALSE,
+                      results = "hold")
+options(scipen=999)
+if (!require("pacman")) install.packages("pacman") # instalar pacman
+pacman::p_load(dplyr, tidyr, haven, stargazer, sjmisc, sjPlot, sjlabelled, tidyverse, summarytools, ggplot2, ggpubr, texreg, webshot, survey, srvyr)
+```
+
+# cargar bases de datos Chile
+
+```{r}
+load("input/proc/chile_1999.RData")
+load("input/proc/chile_2009.RData")
+load("input/proc/chile_2019.RData")
+```
+
+## Ponderadores
+
+* 1999
+```{r}
+chile_1999$sexo <- factor(chile_1999$sex, labels = c("Hombre", "Mujer"))
+chile_1999 <- chile_1999 %>% mutate_at(vars(starts_with(c("V", "brecha"))), ~(as.numeric(.))) 
+
+chile_1999_exp <- chile_1999 %>% as_survey_design(ids = 1,
+                                                      weights = WEIGHT)
+```
+
+* 2009
+```{r}
+chile_2009$sexo <- factor(chile_2009$sex, labels = c("Hombre", "Mujer"))
+chile_2009 <- chile_2009 %>% mutate_at(vars(starts_with(c("V", "brecha"))), ~(as.numeric(.))) 
+
+chile_2009_exp <- chile_2009 %>% as_survey_design(ids = 1,
+                                                      weights = WEIGHT)
+```
+
+* 2019
+```{r}
+chile_2019$sexo <- factor(chile_2019$sex, labels = c("Hombre", "Mujer"))
+chile_2019 <- chile_2019 %>% mutate_at(vars(starts_with(c("v", "brecha"))), ~(as.numeric(.))) 
+
+chile_2019_exp <- chile_2019 %>% as_survey_design(ids = 1,
+                                                      weights = WEIGHT)
+```
+
+## Estimar mediana de cada oficio según sexo, para los tres años de ISSP
+
+```{r}
+data_1999 <- chile_1999_exp %>% group_by(sexo) %>% 
+  summarise(perc_doctor = survey_median(V15, vartype = "ci", na.rm = TRUE),
+            perc_gerente = survey_median(V16, vartype = "ci", na.rm = TRUE),
+            perc_tienda = survey_median(V18, vartype = "ci", na.rm = TRUE),
+            perc_obrero = survey_median(V21, vartype = "ci", na.rm = TRUE),
+            perc_ministro = survey_median(V22, vartype = "ci", na.rm = TRUE),
+            just_doctor = survey_median(V25, vartype = "ci", na.rm = TRUE),
+            just_gerente = survey_median(V26, vartype = "ci", na.rm = TRUE),
+            just_tienda = survey_median(V28, vartype = "ci", na.rm = TRUE),
+            just_obrero = survey_median(V31, vartype = "ci", na.rm = TRUE),
+            just_ministro = survey_median(V32, vartype = "ci", na.rm = TRUE)) %>%
+  cbind(year=c("1999")) %>% as.data.frame()
+
+data_2009 <- chile_2009_exp %>% group_by(sexo) %>% 
+  summarise(perc_doctor = survey_median(V22, vartype = "ci", na.rm = TRUE),
+            perc_gerente = survey_median(V23, vartype = "ci", na.rm = TRUE),
+            perc_tienda = survey_median(V24, vartype = "ci", na.rm = TRUE),
+            perc_obrero = survey_median(V25, vartype = "ci", na.rm = TRUE),
+            perc_ministro = survey_median(V26, vartype = "ci", na.rm = TRUE),
+            just_doctor = survey_median(V27, vartype = "ci", na.rm = TRUE),
+            just_gerente = survey_median(V28, vartype = "ci", na.rm = TRUE),
+            just_tienda = survey_median(V29, vartype = "ci", na.rm = TRUE),
+            just_obrero = survey_median(V30, vartype = "ci", na.rm = TRUE),
+            just_ministro = survey_median(V31, vartype = "ci", na.rm = TRUE)) %>%
+  cbind(year=c("2009")) %>% as.data.frame()
+
+data_2019 <- chile_2019_exp %>% group_by(sexo) %>% 
+  summarise(perc_doctor = survey_median(v11, vartype = "ci", na.rm = TRUE),
+            perc_gerente = survey_median(v12, vartype = "ci", na.rm = TRUE),
+            perc_tienda = survey_median(v13, vartype = "ci", na.rm = TRUE),
+            perc_obrero = survey_median(v14, vartype = "ci", na.rm = TRUE),
+            perc_ministro = survey_median(v15, vartype = "ci", na.rm = TRUE),
+            just_doctor = survey_median(v16, vartype = "ci", na.rm = TRUE),
+            just_gerente = survey_median(v17, vartype = "ci", na.rm = TRUE),
+            just_tienda = survey_median(v18, vartype = "ci", na.rm = TRUE),
+            just_obrero = survey_median(v19, vartype = "ci", na.rm = TRUE),
+            just_ministro = survey_median(v20, vartype = "ci", na.rm = TRUE)) %>%
+  cbind(year=c("2019")) %>% as.data.frame()
+```
+
+## Graficos
+
+* Salario percibido
+
+```{r}
+perc_1999 <- data_1999 %>% 
+  pivot_longer(cols = c("perc_doctor", 
+                        "perc_gerente", 
+                        "perc_tienda", 
+                        "perc_obrero", 
+                        "perc_ministro"),
+               names_to = "oficio",
+               values_to = "salario") %>% 
+  select(sexo, year, oficio, salario)
+
+perc_2009 <- data_2009 %>% 
+  pivot_longer(cols = c("perc_doctor", 
+                        "perc_gerente", 
+                        "perc_tienda", 
+                        "perc_obrero", 
+                        "perc_ministro"), 
+               names_to = "oficio",
+               values_to = "salario") %>% 
+  select(sexo, year, oficio, salario)
+
+perc_2019 <- data_2019 %>% 
+  pivot_longer(cols = c("perc_doctor", 
+                        "perc_gerente", 
+                        "perc_tienda", 
+                        "perc_obrero", 
+                        "perc_ministro"), 
+               names_to = "oficio",
+               values_to = "salario") %>% 
+  select(sexo, year, oficio, salario)
+
+salario_percibido <- rbind(perc_1999, perc_2009, perc_2019)
+```
+
+
+```{r}
+salario_percibido$year <- as_factor(salario_percibido$year)
+salario_percibido$oficio <- factor(salario_percibido$oficio, levels = c("perc_obrero", "perc_tienda", "perc_doctor", "perc_ministro", "perc_gerente"), labels = c("Obrero", "Asistente", "Doctor", "Ministro", "Gerente"))
+
+plot_percibido <- salario_percibido %>%
+  ggplot(aes(x=salario, y=oficio)) +
+  theme_bw() +
+  geom_point(aes(color = sexo, shape = sexo), size = 3) +
+  xlab("salario percibido")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_continuous(limits = c(0, 10000000),
+                     breaks = seq(0, 10000000, by = 2000000)) +
+  facet_grid(~year)
+
+plot_percibido
+ggsave(plot_percibido, file="output/graphs/issp_percibido_exp.png", width = 8,height = 5)
+```
+
+* Salario justo
+```{r}
+just_1999 <- data_1999 %>% 
+  pivot_longer(cols = c("just_doctor", 
+                        "just_gerente", 
+                        "just_tienda", 
+                        "just_obrero", 
+                        "just_ministro"), 
+               names_to = "oficio",
+               values_to = "salario") %>% 
+  select(sexo, year, oficio, salario)
+
+just_2009 <- data_2009 %>% 
+  pivot_longer(cols = c("just_doctor", 
+                        "just_gerente", 
+                        "just_tienda", 
+                        "just_obrero", 
+                        "just_ministro"), 
+               names_to = "oficio",
+               values_to = "salario") %>% 
+  select(sexo, year, oficio, salario)
+
+just_2019 <- data_2019 %>% 
+  pivot_longer(cols = c("just_doctor", 
+                        "just_gerente", 
+                        "just_tienda", 
+                        "just_obrero", 
+                        "just_ministro"), 
+               names_to = "oficio",
+               values_to = "salario") %>% 
+  select(sexo, year, oficio, salario)
+
+salario_justo <- rbind(just_1999, just_2009, just_2019)
+```
+
+```{r}
+salario_justo$year <- as_factor(salario_justo$year)
+salario_justo$oficio <- factor(salario_justo$oficio, levels = c("just_obrero", "just_tienda", "just_doctor", "just_ministro", "just_gerente"), labels = c("Obrero", "Asistente", "Doctor", "Ministro", "Gerente"))
+
+plot_justo <- salario_justo %>%
+  ggplot(aes(salario, oficio)) +
+  theme_bw() +
+  geom_point(aes(color = sexo, shape = sexo), size = 3) +
+  xlab("salario justo")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_continuous(limits = c(0, 6000000),
+                     breaks = seq(0, 6000000, by = 1500000)) +
+  facet_grid(~year)
+
+plot_justo
+ggsave(plot_justo, file="output/graphs/issp_justo_exp.png", width = 8,height = 5)
+```
+
+### Brechas gerente/obrero
+
+```{r}
+brecha_1999 <- chile_1999_exp %>% group_by(sexo) %>%
+  summarise(brecha_perc_1999 = survey_median(brecha_perc_1999, na.rm = T),
+            brecha_just_1999 = survey_median(brecha_just_1999, na.rm = T)
+            )
+
+brecha_2009 <- chile_2009_exp %>% group_by(sexo) %>%
+  summarise(brecha_perc_2009 = survey_median(brecha_perc_2009, na.rm = T),
+            brecha_just_2009 = survey_median(brecha_just_2009, na.rm = T)
+            )
+
+brecha_2019 <- chile_2019_exp %>% group_by(sexo) %>%
+  summarise(brecha_perc_2019 = survey_median(brecha_perc_2019, na.rm = T),
+            brecha_just_2019 = survey_median(brecha_just_2019, na.rm = T)
+            )
+```
+
+```{r}
+base <- merge(brecha_1999, brecha_2009, by="sexo")
+base <- merge(base, brecha_2019, by="sexo")
+
+base <- base %>% 
+  pivot_longer(cols = c("brecha_perc_1999", 
+                        "brecha_just_1999", 
+                        "brecha_perc_2009", 
+                        "brecha_just_2009", 
+                        "brecha_perc_2019", 
+                        "brecha_just_2019"), 
+               names_to = "year",
+               values_to = "mean")
+```
+
+```{r}
+base$year <- factor(base$year, levels = c("brecha_perc_1999", 
+                        "brecha_just_1999", 
+                        "brecha_perc_2009", 
+                        "brecha_just_2009", 
+                        "brecha_perc_2019", 
+                        "brecha_just_2019"))
+
+gerente_obrero <- ggplot(base, aes(x = year, y = mean, color=sexo)) +
+  geom_point(size=4, aes(shape=sexo)) +
+  labs(color = "Sexo", shape="Sexo") +
+  xlab("") + ylab("Brecha")  +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+  scale_x_discrete(label = c("Brecha percibida 1999",
+                             "Brecha justa 1999", 
+                             "Brecha percibida 2009",  
+                             "Brecha justa 2009", 
+                             "Brecha percibida 2019",
+                             "Brecha justa 2019"))
+
+gerente_obrero
+ggsave(gerente_obrero, file="output/graphs/gerente_obrero_exp.png", width = 8, height = 5)
+```
+
+### brechas log(gerente/obrero)
+
+```{r}
+brecha_log_1999 <- chile_1999_exp %>% group_by(sexo) %>%
+  summarise(brecha_perc_1999 = survey_median(brecha_perc_log_1999, na.rm = T),
+            brecha_just_1999 = survey_median(brecha_just_log_1999, na.rm = T)
+            )
+
+brecha_log_2009 <- chile_2009_exp %>% group_by(sexo) %>%
+  summarise(brecha_perc_2009 = survey_median(brecha_perc_log_2009, na.rm = T),
+            brecha_just_2009 = survey_median(brecha_just_log_2009, na.rm = T)
+            )
+
+brecha_log_2019 <- chile_2019_exp %>% group_by(sexo) %>%
+  summarise(brecha_perc_2019 = survey_median(brecha_perc_log_2019, na.rm = T),
+            brecha_just_2019 = survey_median(brecha_just_log_2019, na.rm = T)
+            )
+```
+
+```{r}
+base_log <- merge(brecha_log_1999, brecha_log_2009, by="sexo")
+base_log <- merge(base_log, brecha_log_2019, by="sexo")
+
+base_log <- base_log %>% 
+  pivot_longer(cols = c("brecha_perc_1999", 
+                        "brecha_just_1999", 
+                        "brecha_perc_2009", 
+                        "brecha_just_2009", 
+                        "brecha_perc_2019", 
+                        "brecha_just_2019"), 
+               names_to = "year",
+               values_to = "mean")
+
+```
+
+```{r}
+loggerente_obrero <- ggplot(base_log, aes(x = year, y = mean, color=sexo)) +
+  geom_point(size=4, aes(shape=sexo)) +
+  labs(color = "Sexo", shape="Sexo") +
+  xlab("Año") + ylab("Brecha")  +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+  scale_x_discrete(label = c("Brecha justa 1999", 
+                               "Brecha justa 2009", 
+                               "Brecha justa 2019", 
+                               "Brecha percibida 1999", 
+                               "Brecha percibida 2009",
+                               "Brecha percibida 2019"))
+
+loggerente_obrero
+ggsave(loggerente_obrero, file="output/graphs/loggerente_obrero_exp.png", width = 8, height = 5)
+```
+
+# Relación entre diferencias de ingreso, sexo y educación
+
+### Brechas gerente/obrero
+
+```{r}
+brecha_educ_1999 <- chile_1999_exp %>% filter(!is.na(educacion_rec)) %>% 
+  group_by(sexo, educacion_rec) %>%
+  summarise(brecha_perc_1999 = survey_median(brecha_perc_1999, na.rm = T),
+            brecha_just_1999 = survey_median(brecha_just_1999, na.rm = T)
+            )
+
+brecha_educ_2009 <- chile_2009_exp %>% filter(!is.na(educacion_rec)) %>% 
+  group_by(sexo, educacion_rec) %>%
+  summarise(brecha_perc_2009 = survey_median(brecha_perc_2009, na.rm = T),
+            brecha_just_2009 = survey_median(brecha_just_2009, na.rm = T)
+            )
+
+brecha_educ_2019 <- chile_2019_exp %>% filter(!is.na(educacion_rec)) %>% 
+  group_by(sexo, educacion_rec) %>%
+  summarise(brecha_perc_2019 = survey_median(brecha_perc_2019, na.rm = T),
+            brecha_just_2019 = survey_median(brecha_just_2019, na.rm = T)
+            )
+```
+
+```{r}
+base_educ <- merge(brecha_educ_1999, brecha_educ_2009, by=c("sexo", "educacion_rec"))
+base_educ <- merge(base_educ, brecha_educ_2019, by=c("sexo", "educacion_rec"))
+
+base_educ <- base_educ %>% 
+  pivot_longer(cols = c("brecha_perc_1999", 
+                        "brecha_just_1999", 
+                        "brecha_perc_2009", 
+                        "brecha_just_2009", 
+                        "brecha_perc_2019", 
+                        "brecha_just_2019"), 
+               names_to = "year",
+               values_to = "mean")
+```
+
+```{r}
+base_educ$year <- factor(base_educ$year, levels = c("brecha_perc_1999", 
+                        "brecha_just_1999", 
+                        "brecha_perc_2009", 
+                        "brecha_just_2009", 
+                        "brecha_perc_2019", 
+                        "brecha_just_2019"))
+
+gerente_obrero_educ <- ggplot(base_educ, aes(x = year, y = mean, color=sexo)) +
+  geom_point(size=4, aes(shape=sexo)) +
+  labs(color = "Sexo", shape="Sexo") +
+  xlab("") + ylab("Brecha")  +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 50, hjust = 1)) +
+  scale_x_discrete(label = c("Brecha percibida 1999",
+                             "Brecha justa 1999", 
+                             "Brecha percibida 2009",  
+                             "Brecha justa 2009", 
+                             "Brecha percibida 2019",
+                             "Brecha justa 2019")) +
+  facet_wrap(~educacion_rec)
+
+gerente_obrero_educ
+ggsave(gerente_obrero_educ, file="output/graphs/gerente_obrero_educ_exp.png", width = 12,height = 6)
+```
+
+# Comparación internacional
+
+```{r}
+load("input/proc/inter_1999.RData")
+load("input/proc/inter_2009.RData")
+load("input/proc/inter_2019.RData")
+```
+
+## Ponderadores
+
+* 1999
+```{r}
+inter_1999 <- inter_1999 %>% mutate_at(vars(starts_with(c("V", "brecha"))), ~(as.numeric(.))) 
+
+inter_1999_exp <- inter_1999 %>% as_survey_design(ids = 1,
+                                                      weights = WEIGHT)
+```
+
+* 2009
+```{r}
+inter_2009 <- inter_2009 %>% mutate_at(vars(starts_with(c("V", "brecha"))), ~(as.numeric(.))) 
+
+inter_2009_exp <- inter_2009 %>% as_survey_design(ids = 1,
+                                                      weights = WEIGHT)
+```
+
+* 2019
+```{r}
+inter_2019 <- inter_2019 %>% mutate_at(vars(starts_with(c("v", "brecha"))), ~(as.numeric(.))) 
+
+inter_2019_exp <- inter_2019 %>% as_survey_design(ids = 1,
+                                                      weights = WEIGHT)
+```
+
+## Estimacion
+
+* 2009
+```{r}
+brecha_pais_2009 <- inter_2009_exp %>% filter(!is.na(sex)) %>% 
+  group_by(sex, pais) %>%
+  summarise(brecha_perc_2009 = survey_median(brecha_perc_2009, na.rm = T),
+            brecha_just_2009 = survey_median(brecha_just_2009, na.rm = T)
+            ) %>%
+  arrange(brecha_perc_2009)
+brecha_pais_2009$pais <- factor(brecha_pais_2009$pais, labels = get_labels(inter_2009$pais))
+
+brecha_pais_2009$pais <- if_else(brecha_pais_2009$pais=="GB-Great Britain and/or United Kingdom", "GB-Great Britain", as.character(brecha_pais_2009$pais))
+
+brecha_hombre_pais <- brecha_pais_2009 %>% filter(sex==1) %>%
+    mutate(pais = factor(pais, levels = .$pais))
+
+brecha_mujer_pais <- brecha_pais_2009 %>% filter(sex==2) %>%
+    mutate(pais = factor(pais, levels = .$pais))
+
+brecha_hombre_pais <- brecha_hombre_pais[order(brecha_hombre_pais$brecha_perc_2009), ]
+brecha_mujer_pais <- brecha_mujer_pais[order(brecha_mujer_pais$brecha_perc_2009), ]
+
+brecha_hombre <- brecha_hombre_pais %>% 
+  pivot_longer(cols = c("brecha_perc_2009", 
+                        "brecha_just_2009"), 
+               names_to = "year",
+               values_to = "mean")
+
+brecha_mujer <- brecha_mujer_pais %>% 
+  pivot_longer(cols = c("brecha_perc_2009", 
+                        "brecha_just_2009"), 
+               names_to = "year",
+               values_to = "mean")
+
+brecha <- rbind(brecha_hombre, brecha_mujer)
+class(brecha$sex)
+brecha$sex <- as_factor(brecha$sex)
+```
+
+```{r}
+brecha <- arrange(brecha, mean)
+labels <- c(brecha_just_2009 = "Brecha justa", brecha_perc_2009 = "Brecha percibida")
+
+
+cleveland <- brecha %>% 
+  ggplot(aes(mean, pais)) +
+  theme_bw() +
+  geom_point(aes(color = sex, shape = sex), size = 3) +
+  xlab("Brecha justa") +
+  xlim(0,60) + 
+  facet_wrap(~year, labeller=labeller(year = labels))+
+  labs(colour = "Sexo", shape="Sexo") + 
+  scale_color_discrete(labels = c('Hombre','Mujer'))+
+  scale_shape_discrete(labels = c('Hombre','Mujer'))+
+  theme(axis.text.y = element_text(colour = c(rep("black", 37), "red", rep("black", 3))),
+        legend.position = "bottom") 
+
+ggsave(cleveland, file="output/graphs/cleveland2009.png", width = 12,height = 6)
+```
+
+
+### 2019
+```{r}
+brecha_pais_2019 <- inter_2019_exp %>% filter(!is.na(sex)) %>% 
+  group_by(sex, pais) %>%
+  summarise(brecha_perc_2019 = survey_median(brecha_perc_2019, na.rm = T),
+            brecha_just_2019 = survey_median(brecha_just_2019, na.rm = T)
+            ) %>%
+  arrange(brecha_perc_2019)
+
+brecha_pais_2019$pais <- factor(brecha_pais_2019$pais, labels = get_labels(inter_2019$pais))
+
+brecha_hombre_pais <- brecha_pais_2019 %>% filter(sex==1) %>%
+    mutate(pais = factor(pais, levels = .$pais))
+
+brecha_mujer_pais <- brecha_pais_2019 %>% filter(sex==2) %>%
+    mutate(pais = factor(pais, levels = .$pais))
+
+brecha_hombre_pais <- brecha_hombre_pais[order(brecha_hombre_pais$brecha_perc_2019), ]
+brecha_mujer_pais <- brecha_mujer_pais[order(brecha_mujer_pais$brecha_perc_2019), ]
+
+brecha_hombre <- brecha_hombre_pais %>% 
+  pivot_longer(cols = c("brecha_perc_2019", 
+                        "brecha_just_2019"), 
+               names_to = "year",
+               values_to = "mean")
+
+brecha_mujer <- brecha_mujer_pais %>% 
+  pivot_longer(cols = c("brecha_perc_2019", 
+                        "brecha_just_2019"), 
+               names_to = "year",
+               values_to = "mean")
+
+brecha <- rbind(brecha_hombre, brecha_mujer)
+class(brecha$sex)
+brecha$sex <- as_factor(brecha$sex)
+```
+
+```{r}
+brecha <- arrange(brecha, mean)
+labels <- c(brecha_just_2019 = "Brecha justa", brecha_perc_2019 = "Brecha percibida")
+
+cleveland <- brecha %>% 
+  ggplot(aes(mean, pais)) +
+  theme_bw() +
+  geom_point(aes(color = sex, shape = sex), size = 3) +
+  xlab("Brecha justa") +
+  xlim(0,50) + 
+  facet_wrap(~year, labeller=labeller(year = labels))+
+  labs(colour = "Sexo", shape="Sexo") + 
+  scale_color_discrete(labels = c('Hombre','Mujer'))+
+  scale_shape_discrete(labels = c('Hombre','Mujer'))+
+  theme(axis.text.y = element_text(colour = c(rep("black", 25), "red", rep("black", 3))),
+        legend.position = "bottom") 
+
+cleveland
+ggsave(cleveland, file="output/graphs/cleveland2019.png", width = 12,height = 6)
+```
+
+
+# Regresiones
+
+* 1999
+
+```{r}
+data3 <- chile_1999 %>% 
+  dplyr::select(sex, 
+                educacion_rec, 
+                brecha_perc=brecha_perc_1999, 
+                brecha_just=brecha_just_1999) %>%
+  cbind(year=c("1999")) %>% as.data.frame()
+
+data3 <- na.omit(data3)
+data3$sex <- factor(data3$sex, labels = c("Hombre", "Mujer"))
+```
+
+* 2009
+
+```{r}
+data2 <- chile_2009 %>% 
+  dplyr::select(sex, 
+                educacion_rec, 
+                brecha_perc=brecha_perc_2009, 
+                brecha_just=brecha_just_2009) %>%
+  cbind(year=c("2009")) %>% as.data.frame()
+data2 <- na.omit(data2)
+data2$sex <- factor(data2$sex, labels = c("Hombre", "Mujer"))
+```
+
+* 2019
+
+```{r}
+data <- chile_2019 %>% 
+  dplyr::select(sex, 
+                educacion_rec, 
+                brecha_perc=brecha_perc_2019, 
+                brecha_just=brecha_just_2019) %>%
+  cbind(year=c("2019")) %>% as.data.frame()
+data <- na.omit(data)
+data$sex <- factor(data$sex, labels = c("Hombre", "Mujer"))
+```
+
+```{r}
+dat <- rbind(data, data2, data3)
+```
+
+```{r}
+reg1 <- lm(brecha_perc ~ sex, data=dat)
+reg2 <- lm(brecha_perc ~ sex + educacion_rec, data=dat)
+reg3 <- lm(brecha_perc ~ sex + educacion_rec + sex*year, data=dat)
+#reg4 <- lm(brecha_perc ~ sex*educacion_rec + year, data=dat)
+reg5 <- lm(brecha_just ~ sex, data=dat)
+reg6 <- lm(brecha_just ~ sex + educacion_rec, data=dat)
+reg7 <- lm(brecha_just ~ sex + educacion_rec + sex*year, data=dat)
+reg8 <- lm(brecha_just ~ sex + educacion_rec + sex*year + brecha_perc, data=dat)
+
+htmlreg(list(reg1, reg2, reg3, reg5, reg6, reg7, reg8),
+        custom.model.names = c(rep("Brecha percibida", 3),
+                               rep("Brecha justa",4)),
+        doctype = FALSE,
+        custom.note = "*** p < 0.001; ** p < 0.01; * p < 0.05", 
+        custom.coef.names = c("Intercepto", 
+                              "Mujer <br> <i>(Ref. Hombre)</i>",
+                              "Ed. media completa <br> <i>(Ref. Ed. media incompleta)</i>",
+                              "Educación universitaria",
+                              "2009 <br> <i>(Ref. año 1999)</i>",
+                              "2019",
+                              "Mujer * 2009",
+                              "Mujer * 2019",
+                              "Brecha percibida"),
+        caption = "Percepción de brechas",
+        caption.above = TRUE,
+        file = "output/tables/reg_brechas.html")
+
+webshot2::webshot(url ="output/tables/reg_brechas.html" ,file ="output/tables/reg_brechas.png")
+```
+
+
+```{r}
+
+screenreg(list(reg1, reg2, reg3, reg4, reg5, reg6, reg7))
+```
+
+

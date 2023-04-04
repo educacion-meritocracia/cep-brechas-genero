@@ -1,0 +1,106 @@
+---
+title: "desiguales preparacion"
+date: "`r format(Sys.time(), '%A %d %B %Y %X')`"
+output:
+  bookdown::html_document2:
+    number_sections: true
+    toc: true
+    toc_float:
+        collapsed: false
+    toc_depth: 2
+    code_folding: "hide"
+editor_options:
+  chunk_output_type: console
+---
+
+# Cargar paquetes
+
+```{r}
+options(scipen=999)
+pacman::p_load(dplyr, haven, stargazer, sjmisc, sjPlot, tidyverse, ggplot2)
+```
+
+# cargar base de datos desiguales 2016 (del PNUD)
+
+```{r}
+data <- read_dta("input/original/desiguales2016.dta")
+data <- data %>% select(WEIGHT=pondera_total,
+                        sexo,
+                        p12_sal_real_cajero_h,
+                        p12_sal_real_cajero_m,
+                        p12_sal_real_gerente_h,
+                        p12_sal_real_gerente_m,
+                        p12_sal_real_doctor_h,
+                        p12_sal_real_doctor_m,
+                        p12_sal_real_diput_h,
+                        p12_sal_real_diput_m,
+                        p91_monto, # salario real propio
+                        p12_sal_ideal_cajero_h,
+                        p12_sal_ideal_cajero_m,
+                        p12_sal_ideal_gerente_h,
+                        p12_sal_ideal_gerente_m,
+                        p12_sal_ideal_doctor_h,
+                        p12_sal_ideal_doctor_m,
+                        p12_sal_ideal_diput_h,
+                        p12_sal_ideal_diput_m,
+                        p75_monto # salario ideal propio
+                        )
+
+```
+
+```{r}
+summary(data$p75_monto)
+summary(data$p91_monto)
+```
+
+
+```{r}
+data_rec <- data %>%
+  mutate(sal_real_cajero_h_NA = sum(is.na(ifelse(p12_sal_real_cajero_h <= 2500000 | p12_sal_real_cajero_h==0, NA, p12_sal_real_cajero_h))) - sum(is.na(p12_sal_real_cajero_h))) %>%
+  mutate(sal_real_cajero_h=replace(p12_sal_real_cajero_h, p12_sal_real_cajero_h >= 2500000 | p12_sal_real_cajero_h==0, NA)) %>%
+  mutate(sal_real_cajero_m_NA = sum(is.na(ifelse(p12_sal_real_cajero_m <= 2500000 | p12_sal_real_cajero_m==0, NA, p12_sal_real_cajero_m))) - sum(is.na(p12_sal_real_cajero_h))) %>%
+  mutate(sal_real_cajero_m=replace(p12_sal_real_cajero_m, p12_sal_real_cajero_m >= 2500000 | p12_sal_real_cajero_m==0, NA)) %>% 
+  mutate(sal_real_gerente_h_NA = sum(is.na(ifelse(p12_sal_real_gerente_h <= 35000000 | p12_sal_real_gerente_h==0, NA, p12_sal_real_gerente_h))) - sum(is.na(p12_sal_real_gerente_h))) %>%
+  mutate(sal_real_gerente_h=replace(p12_sal_real_gerente_h, p12_sal_real_gerente_h >= 35000000 | p12_sal_real_gerente_h==0, NA)) %>% 
+  mutate(sal_real_gerente_m_NA = sum(is.na(ifelse(p12_sal_real_gerente_m <= 35000000 | p12_sal_real_gerente_m==0, NA, p12_sal_real_gerente_m))) - sum(is.na(p12_sal_real_gerente_m))) %>%
+  mutate(sal_real_gerente_m=replace(p12_sal_real_gerente_m, p12_sal_real_gerente_m >= 35000000 | p12_sal_real_gerente_m==0, NA))%>% 
+  mutate(sal_real_doctor_h_NA = sum(is.na(ifelse(p12_sal_real_doctor_h <= 24000000 | p12_sal_real_doctor_h==0, NA, p12_sal_real_doctor_h))) - sum(is.na(p12_sal_real_doctor_h))) %>%
+  mutate(sal_real_doctor_h=replace(p12_sal_real_doctor_h, p12_sal_real_doctor_h >= 24000000 | p12_sal_real_doctor_h==0, NA)) %>% 
+  mutate(sal_real_doctor_m_NA = sum(is.na(ifelse(p12_sal_real_doctor_m <= 24000000 | p12_sal_real_doctor_m==0, NA, p12_sal_real_doctor_m))) - sum(is.na(p12_sal_real_doctor_m))) %>%
+  mutate(sal_real_doctor_m=replace(p12_sal_real_doctor_m, p12_sal_real_doctor_m >= 24000000 | p12_sal_real_doctor_m==0, NA))%>% 
+  mutate(sal_real_diput_h_NA = sum(is.na(ifelse(p12_sal_real_diput_h <= 22000000 | p12_sal_real_diput_h==0, NA, p12_sal_real_diput_h))) - sum(is.na(p12_sal_real_diput_h))) %>%
+  mutate(sal_real_diput_h=replace(p12_sal_real_diput_h, p12_sal_real_diput_h >= 22000000 | p12_sal_real_diput_h==0, NA)) %>% 
+  mutate(sal_real_diput_m_NA = sum(is.na(ifelse(p12_sal_real_diput_m <= 22000000 | p12_sal_real_diput_m==0, NA, p12_sal_real_diput_m))) - sum(is.na(p12_sal_real_diput_m))) %>%
+  mutate(sal_real_diput_m=replace(p12_sal_real_diput_m, p12_sal_real_diput_m >= 22000000 | p12_sal_real_diput_m==0, NA)) %>% 
+  mutate(sal_real_propio_NA = sum(is.na(ifelse(p91_monto == 0 | p91_monto == 88 | p91_monto==99, NA, p91_monto))) - sum(is.na(p91_monto))) %>% 
+  mutate(sal_real_propio=replace(p91_monto, p91_monto == 0 | p91_monto == 88 | p91_monto==99, NA))
+```
+
+* ideal
+```{r}
+data_rec <- data_rec %>%
+  mutate(sal_ideal_cajero_h_NA = sum(is.na(ifelse(p12_sal_ideal_cajero_h <= 2500000 | p12_sal_ideal_cajero_h==0, NA, p12_sal_ideal_cajero_h))) - sum(is.na(p12_sal_ideal_cajero_h))) %>%
+  mutate(sal_ideal_cajero_h=replace(p12_sal_ideal_cajero_h, p12_sal_ideal_cajero_h >= 2500000 | p12_sal_ideal_cajero_h==0, NA)) %>%
+  mutate(sal_ideal_cajero_m_NA = sum(is.na(ifelse(p12_sal_ideal_cajero_m <= 2500000 | p12_sal_ideal_cajero_m==0, NA, p12_sal_ideal_cajero_m))) - sum(is.na(p12_sal_ideal_cajero_h))) %>%
+  mutate(sal_ideal_cajero_m=replace(p12_sal_ideal_cajero_m, p12_sal_ideal_cajero_m >= 2500000 | p12_sal_ideal_cajero_m==0, NA)) %>% 
+  mutate(sal_ideal_gerente_h_NA = sum(is.na(ifelse(p12_sal_ideal_gerente_h <= 32000000 | p12_sal_ideal_gerente_h==0, NA, p12_sal_ideal_gerente_h))) - sum(is.na(p12_sal_ideal_gerente_h))) %>%
+  mutate(sal_ideal_gerente_h=replace(p12_sal_ideal_gerente_h, p12_sal_ideal_gerente_h >= 32000000 | p12_sal_ideal_gerente_h==0, NA)) %>% 
+  mutate(sal_ideal_gerente_m_NA = sum(is.na(ifelse(p12_sal_ideal_gerente_m <= 32000000 | p12_sal_ideal_gerente_m==0, NA, p12_sal_ideal_gerente_m))) - sum(is.na(p12_sal_ideal_gerente_m))) %>%
+  mutate(sal_ideal_gerente_m=replace(p12_sal_ideal_gerente_m, p12_sal_ideal_gerente_m >= 32000000 | p12_sal_ideal_gerente_m==0, NA))%>% 
+  mutate(sal_ideal_doctor_h_NA = sum(is.na(ifelse(p12_sal_ideal_doctor_h <= 30000000 | p12_sal_ideal_doctor_h==0, NA, p12_sal_ideal_doctor_h))) - sum(is.na(p12_sal_ideal_doctor_h))) %>%
+  mutate(sal_ideal_doctor_h=replace(p12_sal_ideal_doctor_h, p12_sal_ideal_doctor_h >= 30000000 | p12_sal_ideal_doctor_h==0, NA)) %>% 
+  mutate(sal_ideal_doctor_m_NA = sum(is.na(ifelse(p12_sal_ideal_doctor_m <= 30000000 | p12_sal_ideal_doctor_m==0, NA, p12_sal_ideal_doctor_m))) - sum(is.na(p12_sal_ideal_doctor_m))) %>%
+  mutate(sal_ideal_doctor_m=replace(p12_sal_ideal_doctor_m, p12_sal_ideal_doctor_m >= 30000000 | p12_sal_ideal_doctor_m==0, NA))%>% 
+  mutate(sal_ideal_diput_h_NA = sum(is.na(ifelse(p12_sal_ideal_diput_h <= 11000000 | p12_sal_ideal_diput_h==0, NA, p12_sal_ideal_diput_h))) - sum(is.na(p12_sal_ideal_diput_h))) %>%
+  mutate(sal_ideal_diput_h=replace(p12_sal_ideal_diput_h, p12_sal_ideal_diput_h >= 11000000 | p12_sal_ideal_diput_h==0, NA)) %>% 
+  mutate(sal_ideal_diput_m_NA = sum(is.na(ifelse(p12_sal_ideal_diput_m <= 11000000 | p12_sal_ideal_diput_m==0, NA, p12_sal_ideal_diput_m))) - sum(is.na(p12_sal_ideal_diput_m))) %>%
+  mutate(sal_ideal_diput_m=replace(p12_sal_ideal_diput_m, p12_sal_ideal_diput_m >= 11000000 | p12_sal_ideal_diput_m==0, NA)) %>% 
+  mutate(sal_ideal_propio_NA = sum(is.na(ifelse(p75_monto == 0 | p75_monto == 88 | p75_monto==99, NA, p75_monto))) - sum(is.na(p75_monto))) %>% 
+  mutate(sal_ideal_propio=replace(p75_monto, p75_monto == 0 | p75_monto == 88 | p75_monto==99, NA))
+hist(data_rec$sal_ideal_gerente_h)
+summary(data_rec$sal_ideal_gerente_m)
+```
+
+```{r}
+save(data_rec, file = "input/proc/desiguales_rec.RData")
+```
