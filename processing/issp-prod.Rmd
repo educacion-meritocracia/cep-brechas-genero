@@ -62,6 +62,97 @@ chile_2019_exp <- chile_2019 %>% as_survey_design(ids = 1,
                                                       weights = WEIGHT)
 ```
 
+## Tabla descriptivos
+
+```{r}
+descr_1999 <- chile_1999 %>% select(perc_doctor=V15,
+                                    perc_gerente=V16,
+                                    perc_tienda=V18,
+                                    perc_obrero=V21,
+                                    perc_ministro=V22,
+                                    just_doctor=V25,
+                                    just_gerente=V26,
+                                    just_tienda=V28,
+                                    just_obrero=V31,
+                                    just_ministro=V32,
+                                    brecha_perc_1999, 
+                                    brecha_just_1999,
+                                    sexo,
+                                    educacion_rec)
+
+descr_1999$perc_doctor <- set_label(x = descr_1999$perc_doctor,label = "Salario Percibido: Doctor")
+descr_1999$perc_gerente <- set_label(x = descr_1999$perc_gerente,label = "Salario Percibido: Gerente")
+descr_1999$perc_tienda <- set_label(x = descr_1999$perc_tienda,label = "Salario Percibido: Asistente de tienda")
+descr_1999$perc_obrero <- set_label(x = descr_1999$perc_obrero,label = "Salario Percibido: Obrero no calificado")
+descr_1999$perc_ministro <- set_label(x = descr_1999$perc_ministro,label = "Salario Percibido: Ministro de gobierno")
+
+descr_1999$just_doctor <- set_label(x = descr_1999$just_doctor,label = "Salario justo: Doctor")
+descr_1999$just_gerente <- set_label(x = descr_1999$just_gerente,label = "Salario justo: Gerente")
+descr_1999$just_tienda <- set_label(x = descr_1999$just_tienda,label = "Salario justo: Asistente de tienda")
+descr_1999$just_obrero <- set_label(x = descr_1999$just_obrero,label = "Salario justo: Obrero no calificado")
+descr_1999$just_ministro <- set_label(x = descr_1999$just_ministro,label = "Salario justo: Ministro de gobierno")
+
+descr_1999$brecha_perc_1999 <- set_label(x = descr_1999$brecha_perc_1999,label = "Brecha salarial percibida")
+descr_1999$brecha_just_1999 <- set_label(x = descr_1999$brecha_just_1999,label = "Brecha salarial justa")
+
+descr_1999$educacion_rec <- set_label(x = descr_1999$educacion_rec,label = "Nivel educacional")
+descr_1999$sexo <- set_label(x = descr_1999$sexo,label = "Sexo del entrevistado")
+
+df<- dfSummary(descr_1999,
+               plain.ascii = FALSE,
+               style = "grid",
+               tmp.img.dir = "/tmp",
+               graph.magnif = 0.75,
+               headings = F,  # encabezado
+               varnumbers = F, # num variable
+               labels.col = T, # etiquetas
+               na.col = T,    # missing
+               graph.col = T, # plot
+               valid.col = T, # n valido
+               col.widths = c(1000,10,10,10,10,10))
+df$Variable <- NULL # delete variable column
+view(df,file = "output/tables/desc99.html")
+webshot::webshot(url ="output/tables/desc99.html" ,file ="output/tables/desc99.png")
+```
+
+### Descriptivos
+
+Salarios y brecha percibidos
+```{r echo=FALSE}
+tab1 <- read.csv(file = "input/table1.csv",header = 1,sep = ";",encoding = "UTF-8")
+
+tab1 %>% 
+knitr::kable("html", booktabs = T, linesep = "",col.names =  c("Variable", "Año", "Mínimo",  "Mediana", "Máximo", "Casos válidos", "Casos perdidos")) %>%
+    kable_styling(bootstrap_options=c("striped", "hover", "condensed", "bordered"), full_width = F, font_size=14, position = "center", html_font = "Times new roman") %>% 
+  column_spec(column = 1,width = "10em", bold = TRUE) %>%
+  column_spec(column = 2,width = "3em") %>%
+  column_spec(column = 3,width = "3em") %>%
+  column_spec(column = 4,width = "3em") %>%
+  column_spec(column = 5,width = "3em") %>%
+  column_spec(column = 6,width = "3em") %>%
+  column_spec(column = 7,width = "3em") %>% 
+  collapse_rows(columns = 1) %>% 
+  save_kable("output/tables/descriptivos_percibido.png", density=1000)
+```
+
+salarios y brecha justificadas
+```{r echo=FALSE}
+tab2 <- read.csv(file = "input/table2.csv",header = 1,sep = ";",encoding = "UTF-8")
+
+tab2 %>% 
+knitr::kable("html", booktabs = T, linesep = "",col.names =  c("Variable", "Año", "Mínimo",  "Mediana", "Máximo", "Casos válidos", "Casos perdidos")) %>%
+    kable_styling(bootstrap_options=c("striped", "hover", "condensed", "bordered"), full_width = F, font_size=14, position = "center", html_font = "Times new roman") %>% 
+  column_spec(column = 1,width = "10em", bold = TRUE) %>%
+  column_spec(column = 2,width = "3em") %>%
+  column_spec(column = 3,width = "3em") %>%
+  column_spec(column = 4,width = "3em") %>%
+  column_spec(column = 5,width = "3em") %>%
+  column_spec(column = 6,width = "3em") %>%
+  column_spec(column = 7,width = "3em") %>% 
+  collapse_rows(columns = 1) %>% 
+  save_kable("output/tables/descriptivos_justo.png", density=1000)
+```
+
 ## Estimar mediana de cada oficio según sexo, para los tres años de ISSP
 
 ```{r}
@@ -468,23 +559,24 @@ brecha$sex <- as_factor(brecha$sex)
 
 ```{r}
 brecha <- arrange(brecha, mean)
-labels <- c(brecha_just_2009 = "Brecha justa", brecha_perc_2009 = "Brecha percibida")
-
 
 cleveland <- brecha %>% 
   ggplot(aes(mean, pais)) +
   theme_bw() +
   geom_point(aes(color = sex, shape = sex), size = 3) +
-  xlab("Brecha justa") +
+  xlab("Tamaño brecha") +
   xlim(0,60) + 
-  facet_wrap(~year, labeller=labeller(year = labels))+
+  facet_wrap(~factor(year, levels=c('brecha_perc_2009', 'brecha_just_2009'), 
+                     labels = c(brecha_perc_2009 = "Brecha percibida", brecha_just_2009 = "Brecha justa")),
+             nrow = 2) +
   labs(colour = "Sexo", shape="Sexo") + 
   scale_color_discrete(labels = c('Hombre','Mujer'))+
   scale_shape_discrete(labels = c('Hombre','Mujer'))+
   theme(axis.text.y = element_text(colour = c(rep("black", 37), "red", rep("black", 3))),
-        legend.position = "bottom") 
+        legend.position = "right") 
 
-ggsave(cleveland, file="output/graphs/cleveland2009.png", width = 12,height = 6)
+cleveland
+ggsave(cleveland, file="output/graphs/cleveland2009.png", width = 7,height = 10)
 ```
 
 
@@ -523,27 +615,38 @@ brecha_mujer <- brecha_mujer_pais %>%
 brecha <- rbind(brecha_hombre, brecha_mujer)
 class(brecha$sex)
 brecha$sex <- as_factor(brecha$sex)
+
+
+diferencia <- brecha %>% select(sex, pais, year, mean) %>% 
+  filter(year=="brecha_perc_2019") %>% 
+  pivot_wider(names_from = "sex",
+              values_from = "mean") %>% 
+  rename("Hombre"="1. Male",
+         "Mujer" = "2. Female") %>% 
+  group_by(pais) %>% 
+  mutate(diferencia = Hombre-Mujer,
+         brecha = round((diferencia/Hombre),3)*100)
 ```
 
 ```{r}
 brecha <- arrange(brecha, mean)
-labels <- c(brecha_just_2019 = "Brecha justa", brecha_perc_2019 = "Brecha percibida")
 
 cleveland <- brecha %>% 
   ggplot(aes(mean, pais)) +
   theme_bw() +
   geom_point(aes(color = sex, shape = sex), size = 3) +
-  xlab("Brecha justa") +
+  xlab("Tamaño brecha") +
   xlim(0,50) + 
-  facet_wrap(~year, labeller=labeller(year = labels))+
+  facet_wrap(~factor(year, levels=c('brecha_perc_2019', 'brecha_just_2019'), labels = c(brecha_perc_2019 = "Brecha percibida", brecha_just_2019 = "Brecha justa")),
+             nrow = 2)+
   labs(colour = "Sexo", shape="Sexo") + 
   scale_color_discrete(labels = c('Hombre','Mujer'))+
   scale_shape_discrete(labels = c('Hombre','Mujer'))+
   theme(axis.text.y = element_text(colour = c(rep("black", 25), "red", rep("black", 3))),
-        legend.position = "bottom") 
+        legend.position = "right") 
 
 cleveland
-ggsave(cleveland, file="output/graphs/cleveland2019.png", width = 12,height = 6)
+ggsave(cleveland, file="output/graphs/cleveland2019.png", width = 7,height = 10)
 ```
 
 
@@ -601,11 +704,19 @@ reg3 <- lm(brecha_perc ~ sex + educacion_rec + sex*year, data=dat)
 reg5 <- lm(brecha_just ~ sex, data=dat)
 reg6 <- lm(brecha_just ~ sex + educacion_rec, data=dat)
 reg7 <- lm(brecha_just ~ sex + educacion_rec + sex*year, data=dat)
+
+dat$year <- as.numeric(dat$year)
 reg8 <- lm(brecha_just ~ sex + educacion_rec + sex*year + brecha_perc, data=dat)
 
 htmlreg(list(reg1, reg2, reg3, reg5, reg6, reg7, reg8),
-        custom.model.names = c(rep("Brecha percibida", 3),
-                               rep("Brecha justa",4)),
+        custom.header = list("Brecha percibida"=1:3, "Brecha justa"=4:7),
+        custom.model.names = c("Modelo 1",
+                               "Modelo 2",
+                               "Modelo 3",
+                               "Modelo 4",
+                               "Modelo 5",
+                               "Modelo 6",
+                               "Modelo 7"),
         doctype = FALSE,
         custom.note = "*** p < 0.001; ** p < 0.01; * p < 0.05", 
         custom.coef.names = c("Intercepto", 
@@ -630,4 +741,7 @@ webshot2::webshot(url ="output/tables/reg_brechas.html" ,file ="output/tables/re
 screenreg(list(reg1, reg2, reg3, reg4, reg5, reg6, reg7))
 ```
 
+```{r}
+plot_model(reg3, type="int", mdrt.values = "all")
+```
 

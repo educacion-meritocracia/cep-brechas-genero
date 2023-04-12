@@ -1,0 +1,19 @@
+﻿Variable;año;Mínimo;Mediana;Máximo;Casos válidos;Casos perdidos
+Salario percibido: Doctor;1999;120000;700000;20000000;1058;445
+Salario percibido: Doctor;2009;200000;1500000;25000000;1384;121
+Salario percibido: Doctor;2019;130000;2500000;25000000;1106;268
+Salario percibido: Gerente;1999;30000;3000000;100000000;920;583
+Salario percibido: Gerente;2009;300000;5000000;100000000;1330;175
+Salario percibido: Gerente;2019;300000;8000000;90000000;1040;334
+Salario percibido: Asistente de tienda;1999;55000;150000;1000000;1162;341
+Salario percibido: Asistente de tienda;2009;60000;200000;5000000;1413;92
+Salario percibido: Asistente de tienda;2019;60000;400000;5000000;1222;152
+Salario percibido: Obrero no calificado;1999;45000;90000;800000;1185;318
+Salario percibido: Obrero no calificado;2009;50000;160000;800000;1419;86
+Salario percibido: Obrero no calificado;2019;42000;300000;800000;1245;129
+Salario percibido: Ministro de gobierno;1999;140000;2000000;70000000;901;602
+Salario percibido: Ministro de gobierno;2009;200000;4000000;60000000;1362;143
+Salario percibido: Ministro de gobierno;2019;200000;7000000;90000000;1105;269
+Brecha salarial percibida;1999;2,5;33,3;1250;891;612
+Brecha salarial percibida;2009;1,3;32;750;1291;214
+Brecha salarial percibida;2019;0,8;22,7;353,3;1016;358
