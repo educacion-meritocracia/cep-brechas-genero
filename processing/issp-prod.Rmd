@@ -22,7 +22,7 @@ knitr::opts_chunk$set(warning = FALSE,
                       results = "hold")
 options(scipen=999)
 if (!require("pacman")) install.packages("pacman") # instalar pacman
-pacman::p_load(dplyr, tidyr, haven, stargazer, sjmisc, sjPlot, sjlabelled, tidyverse, summarytools, ggplot2, ggpubr, texreg, webshot, survey, srvyr)
+pacman::p_load(dplyr, tidyr, haven, stargazer, sjmisc, sjPlot, sjlabelled, tidyverse, summarytools, ggplot2, ggpubr, texreg, webshot, survey, srvyr, ggrepel)
 ```
 
 # cargar bases de datos Chile
@@ -519,6 +519,47 @@ inter_2019_exp <- inter_2019 %>% as_survey_design(ids = 1,
 
 ## Estimacion
 
+### 1999
+```{r}
+brecha_pais_1999 <- inter_1999_exp %>% filter(!is.na(sex)) %>% 
+  group_by(sex, pais) %>%
+  summarise(brecha_perc_1999 = survey_median(brecha_perc_1999, na.rm = T),
+            brecha_just_1999 = survey_median(brecha_just_1999, na.rm = T)
+            ) %>%
+  arrange(brecha_perc_1999)
+
+inter_1999$pais <- factor(inter_1999$pais, labels = c("AUS Australia", "D-W Germany West", "D-E Germany East", "GB Great Britain", "NIRL North Ireland", "USA United States", "A Austria", "H Hungary", "N Norway", "S Sweden", "CZ Czech Rep", "SLO Slovenia", "PL Poland", "BG Bulgaria", "RUS Russia", "NZ New Zealand", "CDN Canada", "RP Philippines", "IL Israel", "J Japan", "E Spain", "LV Latvia", "F France", "CY Cyprus", "P Portugal", "RCH Chile", "SVK Slovakia"))
+
+get_labels(inter_1999$pais)
+
+brecha_pais_1999$pais <- factor(brecha_pais_1999$pais, labels = get_labels(inter_1999$pais))
+
+brecha_hombre_pais <- brecha_pais_1999 %>% filter(sex==1) %>%
+    mutate(pais = factor(pais, levels = .$pais))
+
+brecha_mujer_pais <- brecha_pais_1999 %>% filter(sex==2) %>%
+    mutate(pais = factor(pais, levels = .$pais))
+
+brecha_hombre_pais <- brecha_hombre_pais[order(brecha_hombre_pais$brecha_perc_1999), ]
+brecha_mujer_pais <- brecha_mujer_pais[order(brecha_mujer_pais$brecha_perc_1999), ]
+
+brecha_hombre_1999 <- brecha_hombre_pais %>% 
+  pivot_longer(cols = c("brecha_perc_1999", 
+                        "brecha_just_1999"), 
+               names_to = "year",
+               values_to = "mean")
+
+brecha_mujer_1999 <- brecha_mujer_pais %>% 
+  pivot_longer(cols = c("brecha_perc_1999", 
+                        "brecha_just_1999"), 
+               names_to = "year",
+               values_to = "mean")
+
+brecha_1999 <- rbind(brecha_hombre_1999, brecha_mujer_1999)
+class(brecha_1999$sex)
+brecha_1999$sex <- as_factor(brecha_1999$sex)
+```
+
 * 2009
 ```{r}
 brecha_pais_2009 <- inter_2009_exp %>% filter(!is.na(sex)) %>% 
@@ -540,45 +581,22 @@ brecha_mujer_pais <- brecha_pais_2009 %>% filter(sex==2) %>%
 brecha_hombre_pais <- brecha_hombre_pais[order(brecha_hombre_pais$brecha_perc_2009), ]
 brecha_mujer_pais <- brecha_mujer_pais[order(brecha_mujer_pais$brecha_perc_2009), ]
 
-brecha_hombre <- brecha_hombre_pais %>% 
+brecha_hombre_2009 <- brecha_hombre_pais %>% 
   pivot_longer(cols = c("brecha_perc_2009", 
                         "brecha_just_2009"), 
                names_to = "year",
                values_to = "mean")
 
-brecha_mujer <- brecha_mujer_pais %>% 
+brecha_mujer_2009 <- brecha_mujer_pais %>% 
   pivot_longer(cols = c("brecha_perc_2009", 
                         "brecha_just_2009"), 
                names_to = "year",
                values_to = "mean")
 
-brecha <- rbind(brecha_hombre, brecha_mujer)
-class(brecha$sex)
-brecha$sex <- as_factor(brecha$sex)
+brecha_2009 <- rbind(brecha_hombre_2009, brecha_mujer_2009)
+class(brecha_2009$sex)
+brecha_2009$sex <- as_factor(brecha_2009$sex)
 ```
-
-```{r}
-brecha <- arrange(brecha, mean)
-
-cleveland <- brecha %>% 
-  ggplot(aes(mean, pais)) +
-  theme_bw() +
-  geom_point(aes(color = sex, shape = sex), size = 3) +
-  xlab("Tamaño brecha") +
-  xlim(0,60) + 
-  facet_wrap(~factor(year, levels=c('brecha_perc_2009', 'brecha_just_2009'), 
-                     labels = c(brecha_perc_2009 = "Brecha percibida", brecha_just_2009 = "Brecha justa")),
-             nrow = 2) +
-  labs(colour = "Sexo", shape="Sexo") + 
-  scale_color_discrete(labels = c('Hombre','Mujer'))+
-  scale_shape_discrete(labels = c('Hombre','Mujer'))+
-  theme(axis.text.y = element_text(colour = c(rep("black", 37), "red", rep("black", 3))),
-        legend.position = "right") 
-
-cleveland
-ggsave(cleveland, file="output/graphs/cleveland2009.png", width = 7,height = 10)
-```
-
 
 ### 2019
 ```{r}
@@ -600,24 +618,84 @@ brecha_mujer_pais <- brecha_pais_2019 %>% filter(sex==2) %>%
 brecha_hombre_pais <- brecha_hombre_pais[order(brecha_hombre_pais$brecha_perc_2019), ]
 brecha_mujer_pais <- brecha_mujer_pais[order(brecha_mujer_pais$brecha_perc_2019), ]
 
-brecha_hombre <- brecha_hombre_pais %>% 
+brecha_hombre_2019 <- brecha_hombre_pais %>% 
   pivot_longer(cols = c("brecha_perc_2019", 
                         "brecha_just_2019"), 
                names_to = "year",
                values_to = "mean")
 
-brecha_mujer <- brecha_mujer_pais %>% 
+brecha_mujer_2019 <- brecha_mujer_pais %>% 
   pivot_longer(cols = c("brecha_perc_2019", 
                         "brecha_just_2019"), 
                names_to = "year",
                values_to = "mean")
 
-brecha <- rbind(brecha_hombre, brecha_mujer)
-class(brecha$sex)
-brecha$sex <- as_factor(brecha$sex)
+brecha_2019 <- rbind(brecha_hombre_2019, brecha_mujer_2019)
+class(brecha_2019$sex)
+brecha_2019$sex <- as_factor(brecha_2019$sex)
+```
 
+## Brecha percibida
 
-diferencia <- brecha %>% select(sex, pais, year, mean) %>% 
+### Cleveland 2019
+
+```{r}
+get_labels(brecha_2019$pais)
+brecha_2019$pais <- factor(brecha_2019$pais, labels = c("Norway", "Denmark", "Sweden", "Bulgaria", "Philippines", "Croatia", "Czech Republic", "Iceland", "Lithuania", "Israel", "Italy", "Finland", "Thailand", "Slovenia", "Great Britain", "Japan", "New Zealand", "Suriname", "Switzerland", "Austria", "South Africa", "Venezuela", "Taiwan", "France", "Australia", "Chile", "Germany", "United States", "Russia"))
+
+brecha_2019_ord <- arrange(brecha_2019, mean)
+
+cleveland_2019 <- brecha_2019_ord %>% filter(year=="brecha_perc_2019") %>% 
+  ggplot(aes(mean, pais)) +
+  theme_bw() +
+  geom_point(aes(color = sex, shape = sex), size = 3) +
+  xlab("Brecha percibida") +
+  xlim(0,50) +
+  labs(colour = "Sexo", shape="Sexo") + 
+  scale_color_discrete(labels = c('Hombre','Mujer'))+
+  scale_shape_discrete(labels = c('Hombre','Mujer'))+
+  theme(axis.text.y = element_text(colour = c(rep("black", 25), "red", rep("black", 3))),
+        legend.position = "right") 
+
+cleveland_2019
+ggsave(cleveland_2019, file="output/graphs/cleveland2019_percibida.png", width = 7,height = 7)
+```
+
+### Scatterplot brecha percibida vs objetiva (WEF)
+
+```{r}
+diferencia <- brecha_2019 %>% select(sex, pais, year, mean) %>% 
+  filter(year=="brecha_perc_2019") %>% 
+  pivot_wider(names_from = "sex",
+              values_from = "mean") %>% 
+  rename("Hombre"="1. Male",
+         "Mujer" = "2. Female") %>% 
+  group_by(pais) %>% 
+  mutate(diferencia = Hombre-Mujer,
+         brecha = round((diferencia/Mujer),3))
+
+brecha_objetiva <- 1-c(0.842, 0.782, 0.820, 0.727, 0.781, 0.720, 0.706, 0.877, 0.745, 0.718, 0.707, 0.832, 0.708, 0.743, 0.767, 0.652, 0.799, 0.707, 0.779, 0.744, 0.780, 0.713, NA, 0.781, 0.731, 0.723, 0.787, 0.724, 0.706)
+diferencia <- cbind(diferencia, as.data.frame(brecha_objetiva))
+```
+
+```{r}
+scatterplot_percibida <- ggplot(diferencia, aes(x = brecha_objetiva, y = brecha)) +
+  geom_point()+
+  geom_smooth(method = "lm") +
+  geom_text_repel(aes(label=pais), size = 4) +
+  xlab("Brecha objetiva") +
+  ylab("Diferencia salarial percibida por género")+
+  theme_bw()
+
+scatterplot_percibida
+
+ggsave(scatterplot_percibida, file="output/graphs/scatterplot_percibida_WEF.png", width = 7,height = 7)
+```
+
+### Scatterplot brecha percibida vs objetiva (OCDE)
+
+```{r}
+diferencia <- brecha_2019 %>% select(sex, pais, year, mean) %>% 
   filter(year=="brecha_perc_2019") %>% 
   pivot_wider(names_from = "sex",
               values_from = "mean") %>% 
@@ -626,29 +704,215 @@ diferencia <- brecha %>% select(sex, pais, year, mean) %>%
   group_by(pais) %>% 
   mutate(diferencia = Hombre-Mujer,
          brecha = round((diferencia/Hombre),3)*100)
+
+brecha_objetiva <- c(4.368, 5.059, 7.576, 3.358, NA, 7.575, 14.714, 12.901, 14.071, 24.319, 7.640, 17.160, NA, 8.195, 16.100, 23.480, 6.508, NA, 15.096, 14.012, NA, NA, NA, 14.098, 15.312, 8.596, 13.987, 18.471, NA)
+diferencia <- cbind(diferencia, as.data.frame(brecha_objetiva))
 ```
 
 ```{r}
-brecha <- arrange(brecha, mean)
+scatterplot_percibida <- ggplot(diferencia, aes(x = brecha_objetiva, y = brecha)) +
+  geom_point()+
+  geom_smooth(method = "lm") +
+  geom_text_repel(aes(label=pais), size = 4) +
+  xlab("Brecha objetiva") +
+  ylab("Diferencia salarial percibida por género")+
+  theme_bw()
 
-cleveland <- brecha %>% 
+scatterplot_percibida
+
+cor(diferencia$brecha, diferencia$brecha_objetiva)
+
+ggsave(scatterplot_percibida, file="output/graphs/scatterplot_percibida_OCDE.png", width = 7, height = 7)
+```
+
+### Cleveland con los tres años
+
+```{r}
+get_labels(brecha_1999$pais)
+brecha_1999$pais <- factor(brecha_1999$pais, labels = c("Norway", "Cyprus", "Spain", "Sweden", "Philippines", "Slovakia", "Bulgaria", "Austria", "Germany West", "Israel", "Germany East", "North Ireland", "Australia", "United States", "New Zealand", "Japan", "Portugal", "Slovenia", "Czech Republic", "Canada", "Great Britain", "Hungary", "Poland", "France", "Latvia", "Chile", "Russia"))
+
+germany <- brecha_1999 %>% filter(pais=="Germany West" | pais=="Germany East") %>% group_by(sex, year) %>% summarise(mean=mean(mean)) %>% cbind(pais=c("Germany"))
+
+brecha_1999 <- rbind(
+  filter(brecha_1999, pais!="Germany West" & pais!="Germany East"),
+  germany
+  )
+
+
+get_labels(brecha_2009$pais)
+brecha_2009$pais <- factor(brecha_2009$pais, labels = c("Denmark", "Philippines", "Norway", "Sweden", "Belgium", "Venezuela", "Argentina", "Cyprus", "Bulgaria", "Iceland", "Spain", "Israel", "Slovakia", "Latvia", "Turkey", "Japan", "Croatia", "Czech Republic", "New Zealand", "China", "Estonia", "Finland", "Lithuania", "Austria", "Poland", "Switzerland", "Ukraine", "Italy", "South Africa", "Portugal", "Slovenia", "Great Britain", "Russia", "Germany", "Hungary", "France", "Taiwan", "Chile", "Australia", "United States", "South Korea"))
+
+get_labels(brecha_2019$pais)
+
+get_labels(brecha_2019$sex)
+brecha_2019$sex <- factor(brecha_2019$sex, labels = c("Male", "Female"))
+
+brecha_inter <- rbind(select(brecha_1999, sex, pais, year, mean), 
+                      select(brecha_2009, sex, pais, year, mean), 
+                      select(brecha_2019, sex, pais, year, mean))
+
+brecha_inter <- brecha_inter %>%
+  filter(year=="brecha_perc_1999" | year=="brecha_perc_2009" | year=="brecha_perc_2019") %>% 
+  pivot_wider(names_from = "sex",
+              values_from = "mean") %>% 
+  rename("Hombre"= "Male",
+         "Mujer" = "Female") %>% 
+  group_by(pais) %>% 
+  mutate(diferencia = Hombre-Mujer,
+         brecha = round((diferencia/Hombre),3)*100)
+```
+
+```{r}
+pais <- brecha_inter %>% group_by(pais) %>% summarize(brecha=mean(brecha)) %>%
+   arrange(brecha)
+brecha_inter$pais <- factor(brecha_inter$pais, levels = pais$pais)
+
+
+cleveland_inter_year <- brecha_inter %>% filter(pais %nin% c("South Korea", "Canada", "Ukraine", "Finland", "Switzerland", "Portugal", "Italy", "Venezuela", "Poland", "Estonia", "Turkey", "Belgium", "North Ireland", "Latvia", "South Africa", "Hungary", "Croatia", "Spain", "Taiwan", "Denmark", "Iceland", "Cyprus", "Slovakia", "Argentina", "China", "Suriname", "Thailand", "Lithuania")) %>% 
+  ggplot(aes(brecha, pais)) +
+  theme_bw() +
+  geom_point(aes(color = year, shape = year), size = 3) +
+  xlab("Diferencia salarial percibida por género")+
+  xlim(-50,50) +
+  labs(colour = "Año", shape="Año")  +
+  scale_color_discrete(labels = c('1999','2009', '2019'))+
+  scale_shape_discrete(labels = c('1999','2009', '2019'))+
+  theme(axis.text.y = element_text(colour = c(rep("black", 10), "red", rep("black", 6))),
+        legend.position = "right") 
+
+cleveland_inter_year
+ggsave(cleveland_inter_year, file="output/graphs/cleveland_inter_year_perc.png", width = 7,height = 7)
+```
+
+## Brecha justa
+
+### Cleveland 2019
+
+```{r}
+pais <- brecha_2019 %>% filter(year=="brecha_just_2019" & sex=="Male") %>% 
+  arrange(mean)
+
+brecha_2019_just <- brecha_2019
+
+brecha_2019_just$pais <- factor(brecha_2019$pais, levels = pais$pais)
+
+cleveland_2019 <- brecha_2019_just %>% filter(year=="brecha_just_2019") %>% 
   ggplot(aes(mean, pais)) +
   theme_bw() +
   geom_point(aes(color = sex, shape = sex), size = 3) +
-  xlab("Tamaño brecha") +
-  xlim(0,50) + 
-  facet_wrap(~factor(year, levels=c('brecha_perc_2019', 'brecha_just_2019'), labels = c(brecha_perc_2019 = "Brecha percibida", brecha_just_2019 = "Brecha justa")),
-             nrow = 2)+
+  xlab("Brecha justa") +
+  xlim(0,50) +
   labs(colour = "Sexo", shape="Sexo") + 
   scale_color_discrete(labels = c('Hombre','Mujer'))+
   scale_shape_discrete(labels = c('Hombre','Mujer'))+
-  theme(axis.text.y = element_text(colour = c(rep("black", 25), "red", rep("black", 3))),
+  theme(axis.text.y = element_text(colour = c(rep("black", 23), "red", rep("black", 5))),
         legend.position = "right") 
 
-cleveland
-ggsave(cleveland, file="output/graphs/cleveland2019.png", width = 7,height = 10)
+cleveland_2019
+ggsave(cleveland_2019, file="output/graphs/cleveland2019_justa.png", width = 7,height = 7)
 ```
 
+### Scatterplot brecha percibida vs objetiva (WEF)
+
+```{r}
+diferencia <- brecha_2019 %>% select(sex, pais, year, mean) %>% 
+  filter(year=="brecha_just_2019") %>% 
+  pivot_wider(names_from = "sex",
+              values_from = "mean") %>% 
+  rename("Hombre"="Male",
+         "Mujer" ="Female") %>% 
+  group_by(pais) %>% 
+  mutate(diferencia = Hombre-Mujer,
+         brecha = round((diferencia/Mujer),3))
+
+brecha_objetiva <- 1-c(0.842, 0.782, 0.820, 0.727, 0.781, 0.720, 0.706, 0.877, 0.745, 0.718, 0.707, 0.832, 0.708, 0.743, 0.767, 0.652, 0.799, 0.707, 0.779, 0.744, 0.780, 0.713, NA, 0.781, 0.731, 0.723, 0.787, 0.724, 0.706)
+diferencia <- cbind(diferencia, as.data.frame(brecha_objetiva))
+```
+
+```{r}
+scatterplot_justa <- ggplot(diferencia, aes(x = brecha_objetiva, y = brecha)) +
+  geom_point()+
+  geom_smooth(method = "lm") +
+  geom_text_repel(aes(label=pais), size = 4) +
+  xlab("Brecha objetiva") +
+  ylab("Diferencia salarial justa por género")+
+  theme_bw()
+
+scatterplot_justa
+
+ggsave(scatterplot_justa, file="output/graphs/scatterplot_justa_WEF.png", width = 10,height = 7)
+```
+
+### Scatterplot brecha percibida vs objetiva (OCDE)
+
+```{r}
+diferencia <- brecha_2019 %>% select(sex, pais, year, mean) %>% 
+  filter(year=="brecha_just_2019") %>% 
+  pivot_wider(names_from = "sex",
+              values_from = "mean") %>% 
+  rename("Hombre"="Male",
+         "Mujer" = "Female") %>% 
+  group_by(pais) %>% 
+  mutate(diferencia = Hombre-Mujer,
+         brecha = round((diferencia/Hombre),3)*100)
+
+brecha_objetiva <- c(4.368, 5.059, 7.576, 3.358, NA, 7.575, 14.714, 12.901, 14.071, 24.319, 7.640, 17.160, NA, 8.195, 16.100, 23.480, 6.508, NA, 15.096, 14.012, NA, NA, NA, 14.098, 15.312, 8.596, 13.987, 18.471, NA)
+diferencia <- cbind(diferencia, as.data.frame(brecha_objetiva))
+```
+
+```{r}
+scatterplot_justa <- ggplot(diferencia, aes(x = brecha_objetiva, y = brecha)) +
+  geom_point()+
+  geom_smooth(method = "lm") +
+  geom_text_repel(aes(label=pais), size = 4) +
+  xlab("Brecha objetiva") +
+  ylab("Diferencia salarial justa por género")+
+  theme_bw()
+
+scatterplot_justa
+
+ggsave(scatterplot_justa, file="output/graphs/scatterplot_justa_OCDE.png", width = 7, height = 7)
+```
+
+### Cleveland con los tres años
+
+```{r}
+brecha_inter <- rbind(select(brecha_1999, sex, pais, year, mean), 
+                      select(brecha_2009, sex, pais, year, mean), 
+                      select(brecha_2019, sex, pais, year, mean))
+
+brecha_inter <- brecha_inter %>%
+  filter(year=="brecha_just_1999" | year=="brecha_just_2009" | year=="brecha_just_2019") %>% 
+  pivot_wider(names_from = "sex",
+              values_from = "mean") %>% 
+  rename("Hombre"= "Male",
+         "Mujer" = "Female") %>% 
+  group_by(pais) %>% 
+  mutate(diferencia = Hombre-Mujer,
+         brecha = round((diferencia/Hombre),3)*100)
+```
+
+```{r}
+pais <- brecha_inter %>% group_by(pais) %>% summarize(brecha=mean(brecha)) %>%
+   arrange(brecha)
+brecha_inter$pais <- factor(brecha_inter$pais, levels = pais$pais)
+
+
+cleveland_inter_year <- brecha_inter %>% filter(pais %nin% c("South Korea", "Canada", "Ukraine", "Finland", "Switzerland", "Portugal", "Italy", "Venezuela", "Poland", "Estonia", "Turkey", "Belgium", "North Ireland", "Latvia", "South Africa", "Hungary", "Croatia", "Spain", "Taiwan", "Denmark", "Iceland", "Cyprus", "Slovakia", "Argentina", "China", "Suriname", "Thailand", "Lithuania")) %>% 
+  ggplot(aes(brecha, pais)) +
+  theme_bw() +
+  geom_point(aes(color = year, shape = year), size = 3) +
+  xlab("Diferencia salarial justa por género")+
+  xlim(-50,50) +
+  labs(colour = "Año", shape="Año")  +
+  scale_color_discrete(labels = c('1999','2009', '2019'))+
+  scale_shape_discrete(labels = c('1999','2009', '2019'))+
+  theme(axis.text.y = element_text(colour = c(rep("black", 11), "red", rep("black", 5))),
+        legend.position = "right") 
+
+cleveland_inter_year
+ggsave(cleveland_inter_year, file="output/graphs/cleveland_inter_year_just.png", width = 7,height = 7)
+```
 
 # Regresiones
 
