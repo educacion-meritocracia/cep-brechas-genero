@@ -22,7 +22,7 @@ knitr::opts_chunk$set(warning = FALSE,
                       results = "hold")
 options(scipen=999)
 if (!require("pacman")) install.packages("pacman") # instalar pacman
-pacman::p_load(dplyr, tidyr, haven, stargazer, sjmisc, sjPlot, sjlabelled, tidyverse, summarytools, ggplot2, ggpubr, texreg, webshot, survey, srvyr, ggrepel)
+pacman::p_load(dplyr, tidyr, haven, stargazer, sjmisc, sjPlot, sjlabelled, tidyverse, summarytools, ggplot2, ggpubr, texreg, webshot, survey, srvyr, ggrepel, kableExtra)
 ```
 
 # cargar bases de datos Chile
@@ -75,10 +75,11 @@ descr_1999 <- chile_1999 %>% select(perc_doctor=V15,
                                     just_tienda=V28,
                                     just_obrero=V31,
                                     just_ministro=V32,
-                                    brecha_perc_1999, 
-                                    brecha_just_1999,
+                                    brecha_perc=brecha_perc_1999, 
+                                    brecha_just=brecha_just_1999,
                                     sexo,
-                                    educacion_rec)
+                                    educacion_rec) %>% 
+  cbind(year=c("1999"))
 
 descr_1999$perc_doctor <- set_label(x = descr_1999$perc_doctor,label = "Salario Percibido: Doctor")
 descr_1999$perc_gerente <- set_label(x = descr_1999$perc_gerente,label = "Salario Percibido: Gerente")
@@ -98,6 +99,162 @@ descr_1999$brecha_just_1999 <- set_label(x = descr_1999$brecha_just_1999,label =
 descr_1999$educacion_rec <- set_label(x = descr_1999$educacion_rec,label = "Nivel educacional")
 descr_1999$sexo <- set_label(x = descr_1999$sexo,label = "Sexo del entrevistado")
 
+
+# 2009
+descr_2009 <- chile_2009 %>% select(perc_doctor=V22,
+                                    perc_gerente=V23,
+                                    perc_tienda=V24,
+                                    perc_obrero=V25,
+                                    perc_ministro=V26,
+                                    just_doctor=V27,
+                                    just_gerente=V28,
+                                    just_tienda=V29,
+                                    just_obrero=V30,
+                                    just_ministro=V31,
+                                    brecha_perc=brecha_perc_2009, 
+                                    brecha_just=brecha_just_2009,
+                                    sexo,
+                                    educacion_rec) %>% 
+  cbind(year=c("2009"))
+
+descr_2009$perc_doctor <- set_label(x = descr_2009$perc_doctor,label = "Salario Percibido: Doctor")
+descr_2009$perc_gerente <- set_label(x = descr_2009$perc_gerente,label = "Salario Percibido: Gerente")
+descr_2009$perc_tienda <- set_label(x = descr_2009$perc_tienda,label = "Salario Percibido: Asistente de tienda")
+descr_2009$perc_obrero <- set_label(x = descr_2009$perc_obrero,label = "Salario Percibido: Obrero no calificado")
+descr_2009$perc_ministro <- set_label(x = descr_2009$perc_ministro,label = "Salario Percibido: Ministro de gobierno")
+
+descr_2009$just_doctor <- set_label(x = descr_2009$just_doctor,label = "Salario justo: Doctor")
+descr_2009$just_gerente <- set_label(x = descr_2009$just_gerente,label = "Salario justo: Gerente")
+descr_2009$just_tienda <- set_label(x = descr_2009$just_tienda,label = "Salario justo: Asistente de tienda")
+descr_2009$just_obrero <- set_label(x = descr_2009$just_obrero,label = "Salario justo: Obrero no calificado")
+descr_2009$just_ministro <- set_label(x = descr_2009$just_ministro,label = "Salario justo: Ministro de gobierno")
+
+descr_2009$brecha_perc_2009 <- set_label(x = descr_2009$brecha_perc_2009,label = "Brecha salarial percibida")
+descr_2009$brecha_just_2009 <- set_label(x = descr_2009$brecha_just_2009,label = "Brecha salarial justa")
+
+descr_2009$educacion_rec <- set_label(x = descr_2009$educacion_rec,label = "Nivel educacional")
+descr_2009$sexo <- set_label(x = descr_2009$sexo,label = "Sexo del entrevistado")
+
+# 2019
+descr_2019 <- chile_2019 %>% select(perc_doctor=v11,
+                                    perc_gerente=v12,
+                                    perc_tienda=v13,
+                                    perc_obrero=v14,
+                                    perc_ministro=v15,
+                                    just_doctor=v16,
+                                    just_gerente=v17,
+                                    just_tienda=v18,
+                                    just_obrero=v19,
+                                    just_ministro=v20,
+                                    brecha_perc=brecha_perc_2019, 
+                                    brecha_just=brecha_just_2019,
+                                    sexo,
+                                    educacion_rec) %>% 
+  cbind(year=c("2019"))
+
+descr_2019$perc_doctor <- set_label(x = descr_2019$perc_doctor,label = "Salario Percibido: Doctor")
+descr_2019$perc_gerente <- set_label(x = descr_2019$perc_gerente,label = "Salario Percibido: Gerente")
+descr_2019$perc_tienda <- set_label(x = descr_2019$perc_tienda,label = "Salario Percibido: Asistente de tienda")
+descr_2019$perc_obrero <- set_label(x = descr_2019$perc_obrero,label = "Salario Percibido: Obrero no calificado")
+descr_2019$perc_ministro <- set_label(x = descr_2019$perc_ministro,label = "Salario Percibido: Ministro de gobierno")
+
+descr_2019$just_doctor <- set_label(x = descr_2019$just_doctor,label = "Salario justo: Doctor")
+descr_2019$just_gerente <- set_label(x = descr_2019$just_gerente,label = "Salario justo: Gerente")
+descr_2019$just_tienda <- set_label(x = descr_2019$just_tienda,label = "Salario justo: Asistente de tienda")
+descr_2019$just_obrero <- set_label(x = descr_2019$just_obrero,label = "Salario justo: Obrero no calificado")
+descr_2019$just_ministro <- set_label(x = descr_2019$just_ministro,label = "Salario justo: Ministro de gobierno")
+
+descr_2019$brecha_perc_2019 <- set_label(x = descr_2019$brecha_perc_2019,label = "Brecha salarial percibida")
+descr_2019$brecha_just_2019 <- set_label(x = descr_2019$brecha_just_2019,label = "Brecha salarial justa")
+
+descr_2019$educacion_rec <- set_label(x = descr_2019$educacion_rec,label = "Nivel educacional")
+descr_2019$sexo <- set_label(x = descr_2019$sexo,label = "Sexo del entrevistado")
+```
+
+## Preparar boxplots
+
+```{r}
+boxplot <- rbind(descr_1999, descr_2009, descr_2019)
+
+boxplot_perc <- boxplot %>% select(perc_doctor, perc_gerente, perc_tienda, perc_obrero, perc_ministro, year)
+
+boxplot_perc <- boxplot_perc %>% 
+  pivot_longer(cols = c("perc_doctor", 
+                        "perc_gerente", 
+                        "perc_tienda", 
+                        "perc_obrero", 
+                        "perc_ministro"), 
+               names_to = "oficio",
+               values_to = "value")
+
+box_perc <- ggplot(boxplot_perc, aes(x=oficio, y=value, fill=year)) + 
+  geom_boxplot() +
+  scale_y_continuous(name = "Ingreso", limits = c(0, 6000000))+
+  scale_x_discrete(name= "Oficio",
+                   label = c("Doctor",
+                             "Gerente", 
+                             "Ministro",  
+                             "Obrero", 
+                             "Asistente tienda"))+
+  labs(fill = "Año")  +
+  theme_bw()
+
+ggsave(box_perc, file="output/graphs/box_perc.png", width = 7,height = 7)
+```
+
+```{r}
+boxplot_just <- boxplot %>% select(just_doctor, just_gerente, just_tienda, just_obrero, just_ministro, year)
+
+boxplot_just <- boxplot_just %>% 
+  pivot_longer(cols = c("just_doctor", 
+                        "just_gerente", 
+                        "just_tienda", 
+                        "just_obrero", 
+                        "just_ministro"), 
+               names_to = "oficio",
+               values_to = "value")
+
+box_just <- ggplot(boxplot_just, aes(x=oficio, y=value, fill=year)) + 
+  geom_boxplot() +
+  scale_y_continuous(name = "Ingreso", limits = c(0, 6000000))+
+  scale_x_discrete(name= "Oficio",
+                   label = c("Doctor",
+                             "Gerente", 
+                             "Ministro",  
+                             "Obrero", 
+                             "Asistente tienda"))+
+  labs(fill = "Año")  +
+  theme_bw()
+
+box_just
+ggsave(box_just, file="output/graphs/box_just.png", width = 7,height = 7)
+```
+
+```{r}
+boxplot_brecha <- boxplot %>% select(brecha_perc, brecha_just, year)
+
+boxplot_brecha <- boxplot_brecha %>% 
+  pivot_longer(cols = c("brecha_perc", 
+                        "brecha_just"), 
+               names_to = "brecha",
+               values_to = "value")
+
+box_brecha <- ggplot(boxplot_brecha, aes(x=brecha, y=value, fill=year)) + 
+  geom_boxplot() +
+  scale_y_continuous(name = "Tamaño de Brecha", limits = c(0, 150))+
+  scale_x_discrete(name= "Tipo de Brecha",
+                   label = c("Brecha justa",
+                             "Brecha percibida"))+
+  labs(fill = "Año")  +
+  theme_bw()
+
+box_brecha
+ggsave(box_brecha, file="output/graphs/box_brecha.png", width = 7,height = 7)
+```
+
+
+
+```{r}
 df<- dfSummary(descr_1999,
                plain.ascii = FALSE,
                style = "grid",

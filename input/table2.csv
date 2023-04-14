@@ -1,19 +1,19 @@
 ﻿Variable;año;Mínimo;Mediana;Máximo;Casos válidos;Casos perdidos
-Salario justo: Doctor;1999;150000;1000000;15000000;1016;487
-Salario justo: Doctor;2009;150000;1500000;15000000;1364;141
-Salario justo: Doctor;2019;200000;2350000;70000000;1084;290
-Salario justo: Gerente;1999;160000;2000000;60000000;856;647
-Salario justo: Gerente;2009;120000;3000000;400000000;1310;195
-Salario justo: Gerente;2019;200000;4000000;90000000;978;396
-Salario justo: Asistente de tienda;1999;90000;250000;5000000;1149;354
-Salario justo: Asistente de tienda;2009;80000;350000;6000000;1415;90
-Salario justo: Asistente de tienda;2019;60000;600000;7000000;1209;165
-Salario justo: Obrero no calificado;1999;50000;200000;300000000;1181;322
-Salario justo: Obrero no calificado;2009;80000;300000;25000000;1426;79
-Salario justo: Obrero no calificado;2019;50000;500000;4000000;1241;133
-Salario justo: Ministro de gobierno;1999;120000;1200000;35000000;845;658
-Salario justo: Ministro de gobierno;2009;122000;2000000;30000000;1331;174
-Salario justo: Ministro de gobierno;2019;190000;2000000;40000000;1050;324
+Salario justo: Doctor;1999;150.000;1.000.000;15.000.000;1016;487
+Salario justo: Doctor;2009;150.000;1.500.000;15.000.000;1364;141
+Salario justo: Doctor;2019;200.000;2.350.000;70.000.000;1084;290
+Salario justo: Gerente;1999;160.000;2.000.000;60.000.000;856;647
+Salario justo: Gerente;2009;120.000;3.000.000;400.000.000;1310;195
+Salario justo: Gerente;2019;200.000;4.000.000;90.000.000;978;396
+Salario justo: Asistente de tienda;1999;90.000;250.000;5.000.000;1149;354
+Salario justo: Asistente de tienda;2009;80.000;350.000;6.000.000;1415;90
+Salario justo: Asistente de tienda;2019;60.000;600.000;7.000.000;1209;165
+Salario justo: Obrero no calificado;1999;50.000;200.000;300.000.000;1181;322
+Salario justo: Obrero no calificado;2009;80.000;300.000;25.000.000;1426;79
+Salario justo: Obrero no calificado;2019;50.000;500.000;4.000.000;1241;133
+Salario justo: Ministro de gobierno;1999;120.000;1.200.000;35.000.000;845;658
+Salario justo: Ministro de gobierno;2009;122.000;2.000.000;30.000.000;1331;174
+Salario justo: Ministro de gobierno;2019;190.000;2.000.000;40.000.000;1050;324
 Brecha salarial justa;1999;0,3;10;2000;848;655
 Brecha salarial justa;2009;0,2;10;1000;1291;214
 Brecha salarial justa;2019;0,4;7,5;200;961;413
