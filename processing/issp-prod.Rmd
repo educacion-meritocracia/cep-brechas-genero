@@ -22,7 +22,7 @@ knitr::opts_chunk$set(warning = FALSE,
                       results = "hold")
 options(scipen=999)
 if (!require("pacman")) install.packages("pacman") # instalar pacman
-pacman::p_load(dplyr, tidyr, haven, stargazer, sjmisc, sjPlot, sjlabelled, tidyverse, summarytools, ggplot2, ggpubr, texreg, webshot, survey, srvyr, ggrepel, kableExtra)
+pacman::p_load(dplyr, tidyr, haven, stargazer, sjmisc, sjPlot, sjlabelled, tidyverse, summarytools, ggplot2, ggpubr, texreg, webshot, survey, srvyr, ggrepel, kableExtra, ggpattern)
 ```
 
 # cargar bases de datos Chile
@@ -187,18 +187,36 @@ boxplot_perc <- boxplot_perc %>%
                names_to = "oficio",
                values_to = "value")
 
-box_perc <- ggplot(boxplot_perc, aes(x=oficio, y=value, fill=year)) + 
-  geom_boxplot() +
-  scale_y_continuous(name = "Ingreso", limits = c(0, 6000000))+
-  scale_x_discrete(name= "Oficio",
-                   label = c("Doctor",
-                             "Gerente", 
-                             "Ministro",  
-                             "Obrero", 
-                             "Asistente tienda"))+
-  labs(fill = "Año")  +
-  theme_bw()
+boxplot_perc$oficio <- factor(boxplot_perc$oficio,
+                   levels = c("perc_obrero", 
+                             "perc_tienda",
+                             "perc_doctor", 
+                             "perc_ministro",
+                             "perc_gerente"),
+                   labels = c("Obrero", 
+                             "Asistente tienda",
+                             "Doctor", 
+                             "Ministro",
+                             "Gerente"))
 
+
+box_perc<-boxplot_perc %>%  ggplot(aes(x=oficio, y=value, pattern=year, fill=year)) + 
+  geom_boxplot() +
+  scale_y_continuous(name = "Ingreso", limits = c(0, 10000000))+
+  scale_x_discrete(name="Oficio")+
+  scale_fill_manual(values = c("white", "white", "grey"))+
+   geom_boxplot_pattern(position = position_dodge(preserve = "single"), 
+                        color = "black",
+                        pattern_fill = "white",
+                        pattern_density = 0.1, 
+                        pattern_spacing = 0.025) +
+   guides(pattern = guide_legend(override.aes = list(fill = c("white", "white", "grey"))))+
+  scale_pattern_manual(values = c("1999" = "stripe", "2009" = "none", "2019" = "none"), guide = "Año") +
+   labs(fill="Año",
+        pattern="Año")+
+  theme_bw()
+ 
+box_perc
 ggsave(box_perc, file="output/graphs/box_perc.png", width = 7,height = 7)
 ```
 
@@ -214,16 +232,32 @@ boxplot_just <- boxplot_just %>%
                names_to = "oficio",
                values_to = "value")
 
-box_just <- ggplot(boxplot_just, aes(x=oficio, y=value, fill=year)) + 
+boxplot_just$oficio <- factor(boxplot_just$oficio,
+                   levels = c("just_obrero", 
+                             "just_tienda",
+                             "just_doctor", 
+                             "just_ministro",
+                             "just_gerente"),
+                   labels = c("Obrero", 
+                             "Asistente tienda",
+                             "Doctor", 
+                             "Ministro",
+                             "Gerente"))
+
+box_just<-boxplot_just %>%  ggplot(aes(x=oficio, y=value, pattern=year, fill=year)) + 
   geom_boxplot() +
-  scale_y_continuous(name = "Ingreso", limits = c(0, 6000000))+
-  scale_x_discrete(name= "Oficio",
-                   label = c("Doctor",
-                             "Gerente", 
-                             "Ministro",  
-                             "Obrero", 
-                             "Asistente tienda"))+
-  labs(fill = "Año")  +
+  scale_y_continuous(name = "Ingreso", limits = c(0, 10000000))+
+  scale_x_discrete(name="Oficio")+
+  scale_fill_manual(values = c("white", "white", "grey"))+
+   geom_boxplot_pattern(position = position_dodge(preserve = "single"), 
+                        color = "black",
+                        pattern_fill = "white",
+                        pattern_density = 0.1, 
+                        pattern_spacing = 0.025) +
+   guides(pattern = guide_legend(override.aes = list(fill = c("white", "white", "grey"))))+
+  scale_pattern_manual(values = c("1999" = "stripe", "2009" = "none", "2019" = "none"), guide = "Año") +
+   labs(fill="Año",
+        pattern="Año")+
   theme_bw()
 
 box_just
@@ -239,23 +273,187 @@ boxplot_brecha <- boxplot_brecha %>%
                names_to = "brecha",
                values_to = "value")
 
-box_brecha <- ggplot(boxplot_brecha, aes(x=brecha, y=value, fill=year)) + 
+
+box_brecha <- ggplot(boxplot_brecha, aes(x=brecha, y=value, pattern=year, fill=year)) + 
   geom_boxplot() +
   scale_y_continuous(name = "Tamaño de Brecha", limits = c(0, 150))+
   scale_x_discrete(name= "Tipo de Brecha",
                    label = c("Brecha justa",
                              "Brecha percibida"))+
-  labs(fill = "Año")  +
+  scale_fill_manual(values = c("white", "white", "grey"))+
+   geom_boxplot_pattern(position = position_dodge(preserve = "single"), 
+                        color = "black",
+                        pattern_fill = "white",
+                        pattern_density = 0.1, 
+                        pattern_spacing = 0.025) +
+   guides(pattern = guide_legend(override.aes = list(fill = c("white", "white", "grey"))))+
+  scale_pattern_manual(values = c("1999" = "stripe", "2009" = "none", "2019" = "none"), guide = "Año") +
+   labs(fill="Año",
+        pattern="Año")+
   theme_bw()
 
 box_brecha
 ggsave(box_brecha, file="output/graphs/box_brecha.png", width = 7,height = 7)
 ```
 
+### ajustar boxplot según inflación
+
+```{r}
+descr_1999_ipc <- descr_1999 %>% select(perc_doctor, perc_gerente, perc_tienda, perc_obrero, perc_ministro, year)
+
+descr_1999_ipc <- descr_1999_ipc %>% 
+  pivot_longer(cols = c("perc_doctor", 
+                        "perc_gerente", 
+                        "perc_tienda", 
+                        "perc_obrero", 
+                        "perc_ministro"), 
+               names_to = "oficio",
+               values_to = "value")
+
+descr_1999_ipc$value <- descr_1999_ipc$value*1.88
+
+descr_2009_ipc <- descr_2009 %>% select(perc_doctor, perc_gerente, perc_tienda, perc_obrero, perc_ministro, year)
+
+descr_2009_ipc <- descr_2009_ipc %>% 
+  pivot_longer(cols = c("perc_doctor", 
+                        "perc_gerente", 
+                        "perc_tienda", 
+                        "perc_obrero", 
+                        "perc_ministro"), 
+               names_to = "oficio",
+               values_to = "value")
+
+descr_2009_ipc$value <- descr_2009_ipc$value*1.316
+
+descr_2019_ipc <- descr_2019 %>% select(perc_doctor, perc_gerente, perc_tienda, perc_obrero, perc_ministro, year)
+descr_2019_ipc <- descr_2019_ipc %>% 
+  pivot_longer(cols = c("perc_doctor", 
+                        "perc_gerente", 
+                        "perc_tienda", 
+                        "perc_obrero", 
+                        "perc_ministro"), 
+               names_to = "oficio",
+               values_to = "value")
+```
 
 
 ```{r}
-df<- dfSummary(descr_1999,
+boxplot_ipc <- rbind(descr_1999_ipc, descr_2009_ipc, descr_2019_ipc)
+boxplot_perc_ipc <- boxplot_ipc 
+
+boxplot_perc_ipc$oficio <- factor(boxplot_perc_ipc$oficio,
+                   levels = c("perc_obrero", 
+                             "perc_tienda",
+                             "perc_doctor", 
+                             "perc_ministro",
+                             "perc_gerente"),
+                   labels = c("Obrero", 
+                             "Asistente tienda",
+                             "Doctor", 
+                             "Ministro",
+                             "Gerente"))
+
+
+box_perc_ipc<-boxplot_perc_ipc %>%  ggplot(aes(x=oficio, y=value, pattern=year, fill=year)) + 
+  geom_boxplot() +
+  scale_y_continuous(name = "Ingreso", limits = c(0, 10000000))+
+  scale_x_discrete(name="Oficio")+
+  scale_fill_manual(values = c("white", "white", "grey"))+
+   geom_boxplot_pattern(position = position_dodge(preserve = "single"), 
+                        color = "black",
+                        pattern_fill = "white",
+                        pattern_density = 0.1, 
+                        pattern_spacing = 0.025) +
+   guides(pattern = guide_legend(override.aes = list(fill = c("white", "white", "grey"))))+
+  scale_pattern_manual(values = c("1999" = "stripe", "2009" = "none", "2019" = "none"), guide = "Año") +
+   labs(fill="Año",
+        pattern="Año")+
+  theme_bw()
+ 
+box_perc_ipc
+ggsave(box_perc_ipc, file="output/graphs/box_perc_ipc.png", width = 7,height = 7)
+```
+
+```{r}
+descr_1999_ipc <- descr_1999 %>% select(just_doctor, just_gerente, just_tienda, just_obrero, just_ministro, year)
+
+descr_1999_ipc <- descr_1999_ipc %>% 
+  pivot_longer(cols = c("just_doctor", 
+                        "just_gerente", 
+                        "just_tienda", 
+                        "just_obrero", 
+                        "just_ministro"), 
+               names_to = "oficio",
+               values_to = "value")
+
+descr_1999_ipc$value <- descr_1999_ipc$value*1.88
+
+descr_2009_ipc <- descr_2009 %>% select(just_doctor, just_gerente, just_tienda, just_obrero, just_ministro, year)
+
+descr_2009_ipc <- descr_2009_ipc %>% 
+  pivot_longer(cols = c("just_doctor", 
+                        "just_gerente", 
+                        "just_tienda", 
+                        "just_obrero", 
+                        "just_ministro"), 
+               names_to = "oficio",
+               values_to = "value")
+
+descr_2009_ipc$value <- descr_2009_ipc$value*1.316
+
+descr_2019_ipc <- descr_2019 %>% select(just_doctor, just_gerente, just_tienda, just_obrero, just_ministro, year)
+descr_2019_ipc <- descr_2019_ipc %>% 
+  pivot_longer(cols = c("just_doctor", 
+                        "just_gerente", 
+                        "just_tienda", 
+                        "just_obrero", 
+                        "just_ministro"), 
+               names_to = "oficio",
+               values_to = "value")
+```
+
+
+```{r}
+boxplot_ipc <- rbind(descr_1999_ipc, descr_2009_ipc, descr_2019_ipc)
+boxplot_just_ipc <- boxplot_ipc 
+
+boxplot_just_ipc$oficio <- factor(boxplot_just_ipc$oficio,
+                   levels = c("just_obrero", 
+                             "just_tienda",
+                             "just_doctor", 
+                             "just_ministro",
+                             "just_gerente"),
+                   labels = c("Obrero", 
+                             "Asistente tienda",
+                             "Doctor", 
+                             "Ministro",
+                             "Gerente"))
+
+
+box_just_ipc<-boxplot_just_ipc %>%  ggplot(aes(x=oficio, y=value, pattern=year, fill=year)) + 
+  geom_boxplot() +
+  scale_y_continuous(name = "Ingreso", limits = c(0, 10000000))+
+  scale_x_discrete(name="Oficio")+
+  scale_fill_manual(values = c("white", "white", "grey"))+
+   geom_boxplot_pattern(position = position_dodge(preserve = "single"), 
+                        color = "black",
+                        pattern_fill = "white",
+                        pattern_density = 0.1, 
+                        pattern_spacing = 0.025) +
+   guides(pattern = guide_legend(override.aes = list(fill = c("white", "white", "grey"))))+
+  scale_pattern_manual(values = c("1999" = "stripe", "2009" = "none", "2019" = "none"), guide = "Año") +
+   labs(fill="Año",
+        pattern="Año")+
+  theme_bw()
+ 
+box_just_ipc
+ggsave(box_just_ipc, file="output/graphs/box_just_ipc.png", width = 7,height = 7)
+```
+
+
+
+```{r}
+df<- dfSummary(descr_1999_ipc,
                plain.ascii = FALSE,
                style = "grid",
                tmp.img.dir = "/tmp",
@@ -308,6 +506,39 @@ knitr::kable("html", booktabs = T, linesep = "",col.names =  c("Variable", "Año
   column_spec(column = 7,width = "3em") %>% 
   collapse_rows(columns = 1) %>% 
   save_kable("output/tables/descriptivos_justo.png", density=1000)
+```
+
+Salarios ipc y brecha percibidos
+```{r echo=FALSE}
+tab1_ipc <- read.csv(file = "input/table1-ipc.csv",header = 1,sep = ";",encoding = "UTF-8")
+
+tab1_ipc %>% filter(Variable!= "Brecha salarial percibida") %>% 
+knitr::kable("html", booktabs = T, linesep = "",col.names =  c("Variable", "Año", "Mediana", "Mediana ajustada", "Casos válidos")) %>%
+    kable_styling(bootstrap_options=c("striped", "hover", "condensed", "bordered"), full_width = F, font_size=14, position = "center", html_font = "Times new roman") %>% 
+  column_spec(column = 1,width = "10em", bold = TRUE) %>%
+  column_spec(column = 2,width = "3em") %>%
+  column_spec(column = 3,width = "3em") %>%
+  column_spec(column = 4,width = "3em") %>%
+  column_spec(column = 5,width = "3em") %>%
+  collapse_rows(columns = 1) %>% 
+  save_kable("output/tables/descriptivos_percibido_ipc.png", density=1000)
+```
+
+salarios ipc y brecha justificadas
+```{r echo=FALSE}
+tab2_ipc <- read.csv(file = "input/table2-ipc.csv",header = 1,sep = ";",encoding = "UTF-8")
+
+
+tab2_ipc %>% filter(Variable!= "Brecha salarial justa") %>%  
+knitr::kable("html", booktabs = T, linesep = "",col.names =  c("Variable", "Año", "Mediana", "Mediana ajustada", "Casos válidos")) %>%
+    kable_styling(bootstrap_options=c("striped", "hover", "condensed", "bordered"), full_width = F, font_size=14, position = "center", html_font = "Times new roman") %>% 
+  column_spec(column = 1,width = "10em", bold = TRUE) %>%
+  column_spec(column = 2,width = "3em") %>%
+  column_spec(column = 3,width = "3em") %>%
+  column_spec(column = 4,width = "3em") %>%
+  column_spec(column = 5,width = "3em") %>%
+  collapse_rows(columns = 1) %>% 
+  save_kable("output/tables/descriptivos_justo_ipc.png", density=1000)
 ```
 
 ## Estimar mediana de cada oficio según sexo, para los tres años de ISSP
@@ -395,6 +626,7 @@ salario_percibido <- rbind(perc_1999, perc_2009, perc_2019)
 ```{r}
 salario_percibido$year <- as_factor(salario_percibido$year)
 salario_percibido$oficio <- factor(salario_percibido$oficio, levels = c("perc_obrero", "perc_tienda", "perc_doctor", "perc_ministro", "perc_gerente"), labels = c("Obrero", "Asistente", "Doctor", "Ministro", "Gerente"))
+salario_percibido$sexo <- factor(salario_percibido$sexo, levels = c("Mujer", "Hombre"))
 
 plot_percibido <- salario_percibido %>%
   ggplot(aes(x=salario, y=oficio)) +
@@ -407,7 +639,7 @@ plot_percibido <- salario_percibido %>%
   facet_grid(~year)
 
 plot_percibido
-ggsave(plot_percibido, file="output/graphs/issp_percibido_exp.png", width = 8,height = 5)
+ggsave(plot_percibido, file="output/graphs/issp_percibido_exp.png", width = 10,height = 7)
 ```
 
 * Salario justo
@@ -448,6 +680,7 @@ salario_justo <- rbind(just_1999, just_2009, just_2019)
 ```{r}
 salario_justo$year <- as_factor(salario_justo$year)
 salario_justo$oficio <- factor(salario_justo$oficio, levels = c("just_obrero", "just_tienda", "just_doctor", "just_ministro", "just_gerente"), labels = c("Obrero", "Asistente", "Doctor", "Ministro", "Gerente"))
+salario_justo$sexo <- factor(salario_justo$sexo, levels = c("Mujer", "Hombre"))
 
 plot_justo <- salario_justo %>%
   ggplot(aes(salario, oficio)) +
@@ -460,7 +693,7 @@ plot_justo <- salario_justo %>%
   facet_grid(~year)
 
 plot_justo
-ggsave(plot_justo, file="output/graphs/issp_justo_exp.png", width = 8,height = 5)
+ggsave(plot_justo, file="output/graphs/issp_justo_exp.png", width = 10,height = 7)
 ```
 
 ### Brechas gerente/obrero
@@ -504,6 +737,7 @@ base$year <- factor(base$year, levels = c("brecha_perc_1999",
                         "brecha_just_2009", 
                         "brecha_perc_2019", 
                         "brecha_just_2019"))
+base$sexo <- factor(base$sexo, levels = c("Mujer", "Hombre"))
 
 gerente_obrero <- ggplot(base, aes(x = year, y = mean, color=sexo)) +
   geom_point(size=4, aes(shape=sexo)) +
@@ -511,15 +745,15 @@ gerente_obrero <- ggplot(base, aes(x = year, y = mean, color=sexo)) +
   xlab("") + ylab("Brecha")  +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-  scale_x_discrete(label = c("Brecha percibida 1999",
-                             "Brecha justa 1999", 
-                             "Brecha percibida 2009",  
-                             "Brecha justa 2009", 
-                             "Brecha percibida 2019",
-                             "Brecha justa 2019"))
+  scale_x_discrete(label = c("Percibida 1999",
+                             "Justa 1999", 
+                             "Percibida 2009",  
+                             "Justa 2009", 
+                             "Percibida 2019",
+                             "Justa 2019"))
 
 gerente_obrero
-ggsave(gerente_obrero, file="output/graphs/gerente_obrero_exp.png", width = 8, height = 5)
+ggsave(gerente_obrero, file="output/graphs/gerente_obrero_exp.png", width = 10, height = 7)
 ```
 
 ### brechas log(gerente/obrero)
@@ -564,12 +798,12 @@ loggerente_obrero <- ggplot(base_log, aes(x = year, y = mean, color=sexo)) +
   xlab("Año") + ylab("Brecha")  +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-  scale_x_discrete(label = c("Brecha justa 1999", 
-                               "Brecha justa 2009", 
-                               "Brecha justa 2019", 
-                               "Brecha percibida 1999", 
-                               "Brecha percibida 2009",
-                               "Brecha percibida 2019"))
+  scale_x_discrete(label = c("Percibida 1999",
+                             "Justa 1999", 
+                             "Percibida 2009",  
+                             "Justa 2009", 
+                             "Percibida 2019",
+                             "Justa 2019"))
 
 loggerente_obrero
 ggsave(loggerente_obrero, file="output/graphs/loggerente_obrero_exp.png", width = 8, height = 5)
@@ -621,6 +855,7 @@ base_educ$year <- factor(base_educ$year, levels = c("brecha_perc_1999",
                         "brecha_just_2009", 
                         "brecha_perc_2019", 
                         "brecha_just_2019"))
+base_educ$sexo <- factor(base_educ$sexo, levels = c("Mujer", "Hombre"))
 
 gerente_obrero_educ <- ggplot(base_educ, aes(x = year, y = mean, color=sexo)) +
   geom_point(size=4, aes(shape=sexo)) +
@@ -628,12 +863,12 @@ gerente_obrero_educ <- ggplot(base_educ, aes(x = year, y = mean, color=sexo)) +
   xlab("") + ylab("Brecha")  +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 50, hjust = 1)) +
-  scale_x_discrete(label = c("Brecha percibida 1999",
-                             "Brecha justa 1999", 
-                             "Brecha percibida 2009",  
-                             "Brecha justa 2009", 
-                             "Brecha percibida 2019",
-                             "Brecha justa 2019")) +
+  scale_x_discrete(label = c("Percibida 1999",
+                             "Justa 1999", 
+                             "Percibida 2009",  
+                             "Justa 2009", 
+                             "Percibida 2019",
+                             "Justa 2019"))+
   facet_wrap(~educacion_rec)
 
 gerente_obrero_educ
@@ -801,6 +1036,7 @@ get_labels(brecha_2019$pais)
 brecha_2019$pais <- factor(brecha_2019$pais, labels = c("Norway", "Denmark", "Sweden", "Bulgaria", "Philippines", "Croatia", "Czech Republic", "Iceland", "Lithuania", "Israel", "Italy", "Finland", "Thailand", "Slovenia", "Great Britain", "Japan", "New Zealand", "Suriname", "Switzerland", "Austria", "South Africa", "Venezuela", "Taiwan", "France", "Australia", "Chile", "Germany", "United States", "Russia"))
 
 brecha_2019_ord <- arrange(brecha_2019, mean)
+brecha_2019_ord$sex <- factor(brecha_2019_ord$sex, levels = c("2. Female", "1. Male"), labels = c("Mujer", "Hombre"))
 
 cleveland_2019 <- brecha_2019_ord %>% filter(year=="brecha_perc_2019") %>% 
   ggplot(aes(mean, pais)) +
@@ -809,8 +1045,6 @@ cleveland_2019 <- brecha_2019_ord %>% filter(year=="brecha_perc_2019") %>%
   xlab("Brecha percibida") +
   xlim(0,50) +
   labs(colour = "Sexo", shape="Sexo") + 
-  scale_color_discrete(labels = c('Hombre','Mujer'))+
-  scale_shape_discrete(labels = c('Hombre','Mujer'))+
   theme(axis.text.y = element_text(colour = c(rep("black", 25), "red", rep("black", 3))),
         legend.position = "right") 
 
@@ -953,6 +1187,8 @@ brecha_2019_just <- brecha_2019
 
 brecha_2019_just$pais <- factor(brecha_2019$pais, levels = pais$pais)
 
+brecha_2019_just$sex <- factor(brecha_2019_just$sex, levels = c("Female", "Male"), labels = c("Mujer", "Hombre"))
+
 cleveland_2019 <- brecha_2019_just %>% filter(year=="brecha_just_2019") %>% 
   ggplot(aes(mean, pais)) +
   theme_bw() +
@@ -960,8 +1196,6 @@ cleveland_2019 <- brecha_2019_just %>% filter(year=="brecha_just_2019") %>%
   xlab("Brecha justa") +
   xlim(0,50) +
   labs(colour = "Sexo", shape="Sexo") + 
-  scale_color_discrete(labels = c('Hombre','Mujer'))+
-  scale_shape_discrete(labels = c('Hombre','Mujer'))+
   theme(axis.text.y = element_text(colour = c(rep("black", 23), "red", rep("black", 5))),
         legend.position = "right") 
 
@@ -1118,17 +1352,30 @@ dat <- rbind(data, data2, data3)
 ```
 
 ```{r}
-reg1 <- lm(brecha_perc ~ sex, data=dat)
-reg2 <- lm(brecha_perc ~ sex + educacion_rec, data=dat)
-reg3 <- lm(brecha_perc ~ sex + educacion_rec + sex*year, data=dat)
+install.packages("quantreg")
+library(quantreg)
+```
+
+```{r}
+ls_fl_quantiles <- c(0.25, 0.50, 0.75)
+fit_quantiles <- rq(brecha_perc ~ sex,
+               tau = ls_fl_quantiles,
+               data = dat)
+reg1 <- rq(brecha_perc ~ sex, data=dat)
+reg2 <- rq(brecha_perc ~ sex + educacion_rec, data=dat)
+reg3 <- rq(brecha_perc ~ sex + educacion_rec + year, data=dat)
 #reg4 <- lm(brecha_perc ~ sex*educacion_rec + year, data=dat)
-reg5 <- lm(brecha_just ~ sex, data=dat)
-reg6 <- lm(brecha_just ~ sex + educacion_rec, data=dat)
-reg7 <- lm(brecha_just ~ sex + educacion_rec + sex*year, data=dat)
+reg5 <- rq(brecha_just ~ sex, data=dat)
+reg6 <- rq(brecha_just ~ sex + educacion_rec, data=dat)
+reg7 <- rq(brecha_just ~ sex + educacion_rec + year, data=dat)
+reg8 <- rq(brecha_just ~ sex + educacion_rec + year + brecha_perc, data=dat)
 
-dat$year <- as.numeric(dat$year)
-reg8 <- lm(brecha_just ~ sex + educacion_rec + sex*year + brecha_perc, data=dat)
+screenreg(list(reg1, reg2, reg3, reg5, reg6, reg7, reg8))
+```
 
+
+
+```{r}
 htmlreg(list(reg1, reg2, reg3, reg5, reg6, reg7, reg8),
         custom.header = list("Brecha percibida"=1:3, "Brecha justa"=4:7),
         custom.model.names = c("Modelo 1",
@@ -1146,23 +1393,12 @@ htmlreg(list(reg1, reg2, reg3, reg5, reg6, reg7, reg8),
                               "Educación universitaria",
                               "2009 <br> <i>(Ref. año 1999)</i>",
                               "2019",
-                              "Mujer * 2009",
-                              "Mujer * 2019",
                               "Brecha percibida"),
         caption = "Percepción de brechas",
         caption.above = TRUE,
         file = "output/tables/reg_brechas.html")
 
-webshot2::webshot(url ="output/tables/reg_brechas.html" ,file ="output/tables/reg_brechas.png")
+webshot2::webshot(url ="output/tables/reg_brechas.html" ,file ="output/tables/reg_brechas.png",)
 ```
 
-
-```{r}
-
-screenreg(list(reg1, reg2, reg3, reg4, reg5, reg6, reg7))
-```
-
-```{r}
-plot_model(reg3, type="int", mdrt.values = "all")
-```
 

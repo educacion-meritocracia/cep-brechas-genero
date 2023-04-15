@@ -1,0 +1,19 @@
+﻿Variable;año;Mediana;Mediana ajustada;Casos válidos
+Salario justo: Doctor;1999;1.000.000;1.880.000;1016
+Salario justo: Doctor;2009;1.500.000;1.974.000;1364
+Salario justo: Doctor;2019;2.350.000;2.350.000;1084
+Salario justo: Gerente;1999;2.000.000;3.760.000;856
+Salario justo: Gerente;2009;3.000.000;3.948.000;1310
+Salario justo: Gerente;2019;4.000.000;4.000.000;978
+Salario justo: Asistente de tienda;1999;250.000;470.000;1149
+Salario justo: Asistente de tienda;2009;350.000;460.600;1415
+Salario justo: Asistente de tienda;2019;600.000;600.000;1209
+Salario justo: Obrero no calificado;1999;200.000;376.000;1181
+Salario justo: Obrero no calificado;2009;300.000;394.800;1426
+Salario justo: Obrero no calificado;2019;500.000;500.000;1241
+Salario justo: Ministro de gobierno;1999;1.200.000;2.256.000;845
+Salario justo: Ministro de gobierno;2009;2.000.000;2.632.000;1331
+Salario justo: Ministro de gobierno;2019;2.000.000;2.000.000;1050
+Brecha salarial justa;1999;10;10;848
+Brecha salarial justa;2009;10;10;1291
+Brecha salarial justa;2019;7,5;7,5;961
