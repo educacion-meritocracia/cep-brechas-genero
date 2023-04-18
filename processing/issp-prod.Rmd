@@ -203,7 +203,7 @@ boxplot_perc$oficio <- factor(boxplot_perc$oficio,
 box_perc<-boxplot_perc %>%  ggplot(aes(x=oficio, y=value, pattern=year, fill=year)) + 
   geom_boxplot() +
   scale_y_continuous(name = "Ingreso", limits = c(0, 10000000))+
-  scale_x_discrete(name="Oficio")+
+  scale_x_discrete(name="Ocupación")+
   scale_fill_manual(values = c("white", "white", "grey"))+
    geom_boxplot_pattern(position = position_dodge(preserve = "single"), 
                         color = "black",
@@ -247,7 +247,7 @@ boxplot_just$oficio <- factor(boxplot_just$oficio,
 box_just<-boxplot_just %>%  ggplot(aes(x=oficio, y=value, pattern=year, fill=year)) + 
   geom_boxplot() +
   scale_y_continuous(name = "Ingreso", limits = c(0, 10000000))+
-  scale_x_discrete(name="Oficio")+
+  scale_x_discrete(name="Ocupación")+
   scale_fill_manual(values = c("white", "white", "grey"))+
    geom_boxplot_pattern(position = position_dodge(preserve = "single"), 
                         color = "black",
@@ -276,7 +276,7 @@ boxplot_brecha <- boxplot_brecha %>%
 
 box_brecha <- ggplot(boxplot_brecha, aes(x=brecha, y=value, pattern=year, fill=year)) + 
   geom_boxplot() +
-  scale_y_continuous(name = "Tamaño de Brecha", limits = c(0, 150))+
+  scale_y_continuous(name = "Tamaño de Brecha", limits = c(0, 150), breaks = seq(0, 150, by = 10))+
   scale_x_discrete(name= "Tipo de Brecha",
                    label = c("Brecha justa",
                              "Brecha percibida"))+
@@ -357,7 +357,7 @@ boxplot_perc_ipc$oficio <- factor(boxplot_perc_ipc$oficio,
 box_perc_ipc<-boxplot_perc_ipc %>%  ggplot(aes(x=oficio, y=value, pattern=year, fill=year)) + 
   geom_boxplot() +
   scale_y_continuous(name = "Ingreso", limits = c(0, 10000000))+
-  scale_x_discrete(name="Oficio")+
+  scale_x_discrete(name="Ocupación")+
   scale_fill_manual(values = c("white", "white", "grey"))+
    geom_boxplot_pattern(position = position_dodge(preserve = "single"), 
                         color = "black",
@@ -433,7 +433,7 @@ boxplot_just_ipc$oficio <- factor(boxplot_just_ipc$oficio,
 box_just_ipc<-boxplot_just_ipc %>%  ggplot(aes(x=oficio, y=value, pattern=year, fill=year)) + 
   geom_boxplot() +
   scale_y_continuous(name = "Ingreso", limits = c(0, 10000000))+
-  scale_x_discrete(name="Oficio")+
+  scale_x_discrete(name="Ocupación")+
   scale_fill_manual(values = c("white", "white", "grey"))+
    geom_boxplot_pattern(position = position_dodge(preserve = "single"), 
                         color = "black",
@@ -633,6 +633,7 @@ plot_percibido <- salario_percibido %>%
   theme_bw() +
   geom_point(aes(color = sexo, shape = sexo), size = 3) +
   xlab("salario percibido")+
+  ylab("Ocupación")+
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_x_continuous(limits = c(0, 10000000),
                      breaks = seq(0, 10000000, by = 2000000)) +
@@ -687,6 +688,7 @@ plot_justo <- salario_justo %>%
   theme_bw() +
   geom_point(aes(color = sexo, shape = sexo), size = 3) +
   xlab("salario justo")+
+  ylab("Ocupación")+
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_x_continuous(limits = c(0, 6000000),
                      breaks = seq(0, 6000000, by = 1500000)) +
@@ -1373,6 +1375,21 @@ reg8 <- rq(brecha_just ~ sex + educacion_rec + year + brecha_perc, data=dat)
 screenreg(list(reg1, reg2, reg3, reg5, reg6, reg7, reg8))
 ```
 
+### R2
+
+```{r}
+fit0 <- rq(brecha_perc~1,data=dat)
+fit1 <- rq(brecha_just~1,data=dat)
+
+rho <- function(u,tau=.5)u*(tau - (u < 0))
+R1 <- 1 - reg1$rho/fit0$rho
+R2 <- 1 - reg2$rho/fit0$rho
+R3 <- 1 - reg3$rho/fit0$rho
+R4 <- 1 - reg5$rho/fit1$rho
+R5 <- 1 - reg6$rho/fit1$rho
+R6 <- 1 - reg7$rho/fit1$rho
+R7 <- 1 - reg8$rho/fit1$rho
+```
 
 
 ```{r}
@@ -1394,8 +1411,9 @@ htmlreg(list(reg1, reg2, reg3, reg5, reg6, reg7, reg8),
                               "2009 <br> <i>(Ref. año 1999)</i>",
                               "2019",
                               "Brecha percibida"),
-        caption = "Percepción de brechas",
+        caption = "",
         caption.above = TRUE,
+        custom.gof.rows=list("R2" = c(R1, R2, R3, R4,R5,R6,R7)),
         file = "output/tables/reg_brechas.html")
 
 webshot2::webshot(url ="output/tables/reg_brechas.html" ,file ="output/tables/reg_brechas.png",)
