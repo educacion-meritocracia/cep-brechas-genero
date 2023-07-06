@@ -26,7 +26,7 @@ pacman::p_load(dplyr, haven, stargazer, sjmisc, sjPlot, tidyverse, ggplot2)
 data <- read_dta("input/original/desiguales2016.dta") # no original
 dim(data) # 2613
 names(data)
-data <- data %>% select(WEIGHT=pondera_total,
+data_rec <- data %>% select(WEIGHT=pondera_total,
                         sexo,
                         p12_sal_real_cajero_h,
                         p12_sal_real_cajero_m,
@@ -54,7 +54,7 @@ data <- data %>% select(WEIGHT=pondera_total,
 
 ## Salario actual e ideal propio
 ```{r}
-stargazer(as.data.frame(data), type = "text", median = TRUE )
+stargazer(as.data.frame(data_rec), type = "text", median = TRUE )
 ```
 
 ## Limpieza de valores extremos
@@ -62,9 +62,39 @@ stargazer(as.data.frame(data), type = "text", median = TRUE )
 - eliminar todos los valores menores a 10.000
 - 
 
+```{r}
+# para salarios real e ideal según oficio
+data_rec <- data_rec %>% 
+  mutate_at(vars(starts_with("p12")),
+            ~(ifelse(. <=10000, 
+                     NA, .))) # pasar a na
+
+# para salario propio real
+data_rec <- data_rec %>% 
+  mutate_at(vars(p91_monto),
+            ~(ifelse(. <=10000, 
+                     NA, .))) # pasar a na
+
+# para salario propio ideal
+data_rec <- data_rec %>% 
+  mutate_at(vars(p75_monto),
+            ~(ifelse(. <=10000, 
+                     NA, .))) # pasar a na
+
+stargazer(as.data.frame(data_rec), type = "text", median = TRUE )
+```
+
 
 ```{r}
-data_rec <- data %>%
+save(data_rec, file = "input/proc/desiguales_rec.RData")
+```
+
+
+
+#### include=FALSE
+
+```{r, include=FALSE}
+data_rec <- data_rec %>%
   mutate(sal_real_cajero_h_NA = sum(is.na(ifelse(p12_sal_real_cajero_h <= 2500000 | p12_sal_real_cajero_h==0, NA, p12_sal_real_cajero_h))) - sum(is.na(p12_sal_real_cajero_h))) %>%
   mutate(sal_real_cajero_h=replace(p12_sal_real_cajero_h, p12_sal_real_cajero_h >= 2500000 | p12_sal_real_cajero_h==0, NA)) %>%
   mutate(sal_real_cajero_m_NA = sum(is.na(ifelse(p12_sal_real_cajero_m <= 2500000 | p12_sal_real_cajero_m==0, NA, p12_sal_real_cajero_m))) - sum(is.na(p12_sal_real_cajero_h))) %>%
@@ -86,7 +116,7 @@ data_rec <- data %>%
 ```
 
 * ideal
-```{r}
+```{r, include=FALSE}
 data_rec <- data_rec %>%
   mutate(sal_ideal_cajero_h_NA = sum(is.na(ifelse(p12_sal_ideal_cajero_h <= 2500000 | p12_sal_ideal_cajero_h==0, NA, p12_sal_ideal_cajero_h))) - sum(is.na(p12_sal_ideal_cajero_h))) %>%
   mutate(sal_ideal_cajero_h=replace(p12_sal_ideal_cajero_h, p12_sal_ideal_cajero_h >= 2500000 | p12_sal_ideal_cajero_h==0, NA)) %>%
@@ -106,13 +136,8 @@ data_rec <- data_rec %>%
   mutate(sal_ideal_diput_m=replace(p12_sal_ideal_diput_m, p12_sal_ideal_diput_m >= 11000000 | p12_sal_ideal_diput_m==0, NA)) %>% 
   mutate(sal_ideal_propio_NA = sum(is.na(ifelse(p75_monto == 0 | p75_monto == 88 | p75_monto==99, NA, p75_monto))) - sum(is.na(p75_monto))) %>% 
   mutate(sal_ideal_propio=replace(p75_monto, p75_monto == 0 | p75_monto == 88 | p75_monto==99, NA))
-hist(data_rec$sal_ideal_gerente_h)
-summary(data_rec$sal_ideal_gerente_m)
 
 stargazer(as.data.frame(data_rec), type = "text", median = TRUE )
 
 ```
 
-```{r}
-save(data_rec, file = "input/proc/desiguales_rec.RData")
-```
