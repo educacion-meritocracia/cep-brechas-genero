@@ -23,7 +23,9 @@ pacman::p_load(dplyr, haven, stargazer, sjmisc, sjPlot, tidyverse, ggplot2)
 # cargar base de datos desiguales 2016 (del PNUD)
 
 ```{r}
-data <- read_dta("input/original/desiguales2016.dta")
+data <- read_dta("input/original/desiguales2016.dta") # no original
+dim(data) # 2613
+names(data)
 data <- data %>% select(WEIGHT=pondera_total,
                         sexo,
                         p12_sal_real_cajero_h,
@@ -48,10 +50,17 @@ data <- data %>% select(WEIGHT=pondera_total,
 
 ```
 
+# Revisión items
+
+## Salario actual e ideal propio
 ```{r}
-summary(data$p75_monto)
-summary(data$p91_monto)
+stargazer(as.data.frame(data), type = "text", median = TRUE )
 ```
+
+## Limpieza de valores extremos
+
+- eliminar todos los valores menores a 10.000
+- 
 
 
 ```{r}
@@ -99,6 +108,9 @@ data_rec <- data_rec %>%
   mutate(sal_ideal_propio=replace(p75_monto, p75_monto == 0 | p75_monto == 88 | p75_monto==99, NA))
 hist(data_rec$sal_ideal_gerente_h)
 summary(data_rec$sal_ideal_gerente_m)
+
+stargazer(as.data.frame(data_rec), type = "text", median = TRUE )
+
 ```
 
 ```{r}
