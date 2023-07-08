@@ -1,0 +1,70 @@
+---
+title: "desiguales_regresiones"
+author: "kevin"
+date: "2023-07-08"
+output: html_document
+---
+
+# Cargar paquetes
+
+```{r}
+options(scipen=999)
+pacman::p_load(dplyr, haven, stargazer, sjmisc, sjPlot, tidyverse, ggplot2, survey, srvyr, ggpubr, texreg)
+```
+
+# cargar base de datos desiguales 2016 (del PNUD)
+
+```{r}
+load("input/proc/desiguales_rec.RData")
+
+data_rec$sexo <- factor(data_rec$sexo, labels = c("Hombre", "Mujer"))
+data_rec$educacion_rec <- factor(data_rec$educacion_rec, labels = c("No_Universitario", "Universitario"))
+```
+
+## Regresiones
+
+* salario real cajero
+
+```{r, results='asis'}
+reg1 <- lm(p12_sal_real_cajero ~ sexo, data=data_rec)
+reg2 <- lm(p12_sal_real_cajero ~ sexo + cajera, data=data_rec)
+reg3 <- lm(p12_sal_real_cajero ~ sexo + cajera + educacion_rec, data=data_rec)
+reg4 <- lm(p12_sal_real_cajero ~ sexo + cajera + educacion_rec + sexo*educacion_rec, data=data_rec)
+
+htmlreg(list(reg1, reg2, reg3, reg4))
+```
+
+* salario ideal cajero
+
+```{r, results='asis'}
+reg1 <- lm(p12_sal_ideal_cajero ~ sexo, data=data_rec)
+reg2 <- lm(p12_sal_ideal_cajero ~ sexo + cajera, data=data_rec)
+reg3 <- lm(p12_sal_ideal_cajero ~ sexo + cajera + educacion_rec, data=data_rec)
+reg4 <- lm(p12_sal_ideal_cajero ~ sexo + cajera + educacion_rec + sexo*educacion_rec, data=data_rec)
+
+htmlreg(list(reg1, reg2, reg3, reg4))
+```
+
+* salario real gerente
+
+```{r, results='asis'}
+reg1 <- lm(p12_sal_real_gerente ~ sexo, data=data_rec)
+reg2 <- lm(p12_sal_real_gerente ~ sexo + gerenta, data=data_rec)
+reg3 <- lm(p12_sal_real_gerente ~ sexo + gerenta + educacion_rec, data=data_rec)
+reg4 <- lm(p12_sal_real_gerente ~ sexo + gerenta + educacion_rec + sexo*educacion_rec, data=data_rec)
+
+htmlreg(list(reg1, reg2, reg3, reg4))
+```
+
+* salario ideal gerente
+
+```{r, results='asis'}
+reg1 <- lm(p12_sal_ideal_gerente ~ sexo, data=data_rec)
+reg2 <- lm(p12_sal_ideal_gerente ~ sexo + gerenta, data=data_rec)
+reg3 <- lm(p12_sal_ideal_gerente ~ sexo + gerenta + educacion_rec, data=data_rec)
+reg4 <- lm(p12_sal_ideal_gerente ~ sexo + gerenta + educacion_rec + sexo*educacion_rec, data=data_rec)
+
+htmlreg(list(reg1, reg2, reg3, reg4))
+```
+
+

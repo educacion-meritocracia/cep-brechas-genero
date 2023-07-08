@@ -28,23 +28,33 @@ dim(data) # 2613
 names(data)
 data_rec <- data %>% select(WEIGHT=pondera_total,
                         sexo,
-                        p12_sal_real_cajero_h,
-                        p12_sal_real_cajero_m,
+                        educacion=p51,
+                        p12_aleatorio, # 1= cajero gerenta doctora diputado; 0= cajera gerente doctor diputada
+                        p12_sal_real_cajero_h, # hombre
+                        p12_sal_real_cajero_m, # mujer
+                        p12_sal_real_cajero, #ambos
                         p12_sal_real_gerente_h,
                         p12_sal_real_gerente_m,
+                        p12_sal_real_gerente,
                         p12_sal_real_doctor_h,
                         p12_sal_real_doctor_m,
+                        p12_sal_real_doctor,
                         p12_sal_real_diput_h,
                         p12_sal_real_diput_m,
+                        p12_sal_real_diput,
                         p91_monto, # salario real propio
                         p12_sal_ideal_cajero_h,
                         p12_sal_ideal_cajero_m,
+                        p12_sal_ideal_cajero,
                         p12_sal_ideal_gerente_h,
                         p12_sal_ideal_gerente_m,
+                        p12_sal_ideal_gerente,
                         p12_sal_ideal_doctor_h,
                         p12_sal_ideal_doctor_m,
+                        p12_sal_ideal_doctor,
                         p12_sal_ideal_diput_h,
                         p12_sal_ideal_diput_m,
+                        p12_sal_ideal_diput,
                         p75_monto # salario ideal propio
                         )
 
@@ -63,6 +73,10 @@ stargazer(as.data.frame(data_rec), type = "text", median = TRUE )
 - 
 
 ```{r}
+# 1= cajero gerenta doctora diputado; 0= cajera gerente doctor diputada
+data_rec$cajera <- ifelse(data_rec$p12_aleatorio==1, 1, 0)
+data_rec$gerenta <- ifelse(data_rec$p12_aleatorio==0, 1, 0)
+
 # para salarios real e ideal según oficio
 data_rec <- data_rec %>% 
   mutate_at(vars(starts_with("p12")),
@@ -82,6 +96,25 @@ data_rec <- data_rec %>%
                      NA, .))) # pasar a na
 
 stargazer(as.data.frame(data_rec), type = "text", median = TRUE )
+
+
+# educacion superior o no
+data_rec <- data_rec %>% rowwise() %>%  mutate(educacion_rec = case_when(educacion==1~0,
+                                                                         educacion==2~0,
+                                                                         educacion==3~0,
+                                                                         educacion==4~0,
+                                                                         educacion==5~1,
+                                                                         educacion==6~1,
+                                                                         educacion==7~1,
+                                                                         educacion==8~1,
+                                                                         educacion==9~1,
+                                                                         TRUE~NA
+                                                 ))
+
+
+head(select(data_rec, gerenta, p12_sal_ideal_gerente_m, p12_sal_ideal_gerente_h, p12_sal_real_gerente_m, p12_sal_real_gerente_h))
+head(select(data_rec, cajera, p12_sal_ideal_cajero_m, p12_sal_ideal_cajero_h, p12_sal_real_cajero_m, p12_sal_real_cajero_h))
+
 ```
 
 
