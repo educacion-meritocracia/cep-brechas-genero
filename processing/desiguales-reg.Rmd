@@ -8,8 +8,12 @@ output: html_document
 # Cargar paquetes
 
 ```{r}
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE, 
+                      cache = FALSE,
+                      results = "hold")
 options(scipen=999)
-pacman::p_load(dplyr, haven, stargazer, sjmisc, sjPlot, tidyverse, ggplot2, survey, srvyr, ggpubr, texreg)
+pacman::p_load(dplyr, haven, stargazer, sjmisc, sjPlot, tidyverse, ggplot2, survey, srvyr, ggpubr, texreg, quantreg, fastDummies)
 ```
 
 # cargar base de datos desiguales 2016 (del PNUD)
@@ -18,6 +22,8 @@ pacman::p_load(dplyr, haven, stargazer, sjmisc, sjPlot, tidyverse, ggplot2, surv
 load("input/proc/desiguales_rec.RData")
 
 data_rec$sexo <- factor(data_rec$sexo, labels = c("Hombre", "Mujer"))
+data_rec$cajera <- factor(data_rec$cajera, labels = c("Cajero", "Cajera"))
+data_rec$gerenta <- factor(data_rec$gerenta, labels = c("Gerente", "Gerenta"))
 data_rec$educacion_rec <- factor(data_rec$educacion_rec, labels = c("No_Universitario", "Universitario"))
 ```
 
@@ -26,45 +32,185 @@ data_rec$educacion_rec <- factor(data_rec$educacion_rec, labels = c("No_Universi
 * salario real cajero
 
 ```{r, results='asis'}
-reg1 <- lm(p12_sal_real_cajero ~ sexo, data=data_rec)
-reg2 <- lm(p12_sal_real_cajero ~ sexo + cajera, data=data_rec)
-reg3 <- lm(p12_sal_real_cajero ~ sexo + cajera + educacion_rec, data=data_rec)
-reg4 <- lm(p12_sal_real_cajero ~ sexo + cajera + educacion_rec + sexo*educacion_rec, data=data_rec)
+reg1 <- lm(p12_sal_real_cajero ~ cajera, data=data_rec)
+reg2 <- lm(p12_sal_real_cajero ~ cajera + sexo, data=data_rec)
+reg3 <- lm(p12_sal_real_cajero ~ cajera + sexo + educacion_rec, data=data_rec)
+reg4 <- lm(p12_sal_real_cajero ~ cajera + sexo + educacion_rec + sexo*educacion_rec, data=data_rec)
+reg5 <- lm(p12_sal_real_cajero ~ cajera + sexo + educacion_rec + cajera*sexo, data=data_rec)
+reg6 <- lm(p12_sal_real_cajero ~ cajera + sexo + educacion_rec + cajera*educacion_rec, data=data_rec)
 
-htmlreg(list(reg1, reg2, reg3, reg4))
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))
 ```
 
 * salario ideal cajero
 
 ```{r, results='asis'}
-reg1 <- lm(p12_sal_ideal_cajero ~ sexo, data=data_rec)
-reg2 <- lm(p12_sal_ideal_cajero ~ sexo + cajera, data=data_rec)
-reg3 <- lm(p12_sal_ideal_cajero ~ sexo + cajera + educacion_rec, data=data_rec)
-reg4 <- lm(p12_sal_ideal_cajero ~ sexo + cajera + educacion_rec + sexo*educacion_rec, data=data_rec)
+reg1 <- lm(p12_sal_ideal_cajero ~ cajera, data=data_rec)
+reg2 <- lm(p12_sal_ideal_cajero ~ cajera + sexo, data=data_rec)
+reg3 <- lm(p12_sal_ideal_cajero ~ cajera + sexo + educacion_rec, data=data_rec)
+reg4 <- lm(p12_sal_ideal_cajero ~ cajera + sexo + educacion_rec + sexo*educacion_rec, data=data_rec)
+reg5 <- lm(p12_sal_ideal_cajero ~ cajera + sexo + educacion_rec + cajera*sexo, data=data_rec)
+reg6 <- lm(p12_sal_ideal_cajero ~ cajera + sexo + educacion_rec + cajera*educacion_rec, data=data_rec)
 
-htmlreg(list(reg1, reg2, reg3, reg4))
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))
 ```
 
 * salario real gerente
 
 ```{r, results='asis'}
-reg1 <- lm(p12_sal_real_gerente ~ sexo, data=data_rec)
-reg2 <- lm(p12_sal_real_gerente ~ sexo + gerenta, data=data_rec)
-reg3 <- lm(p12_sal_real_gerente ~ sexo + gerenta + educacion_rec, data=data_rec)
-reg4 <- lm(p12_sal_real_gerente ~ sexo + gerenta + educacion_rec + sexo*educacion_rec, data=data_rec)
+reg1 <- lm(p12_sal_real_gerente ~ gerenta, data=data_rec)
+reg2 <- lm(p12_sal_real_gerente ~ gerenta + sexo, data=data_rec)
+reg3 <- lm(p12_sal_real_gerente ~ gerenta + sexo + educacion_rec, data=data_rec)
+reg4 <- lm(p12_sal_real_gerente ~ gerenta + sexo + educacion_rec + sexo*educacion_rec, data=data_rec)
+reg5 <- lm(p12_sal_real_gerente ~ gerenta + sexo + educacion_rec + gerenta*sexo, data=data_rec)
+reg6 <- lm(p12_sal_real_gerente ~ gerenta + sexo + educacion_rec + gerenta*educacion_rec, data=data_rec)
 
-htmlreg(list(reg1, reg2, reg3, reg4))
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))
 ```
 
 * salario ideal gerente
 
 ```{r, results='asis'}
-reg1 <- lm(p12_sal_ideal_gerente ~ sexo, data=data_rec)
-reg2 <- lm(p12_sal_ideal_gerente ~ sexo + gerenta, data=data_rec)
-reg3 <- lm(p12_sal_ideal_gerente ~ sexo + gerenta + educacion_rec, data=data_rec)
-reg4 <- lm(p12_sal_ideal_gerente ~ sexo + gerenta + educacion_rec + sexo*educacion_rec, data=data_rec)
+reg1 <- lm(p12_sal_ideal_gerente ~ gerenta, data=data_rec)
+reg2 <- lm(p12_sal_ideal_gerente ~ gerenta + sexo, data=data_rec)
+reg3 <- lm(p12_sal_ideal_gerente ~ gerenta + sexo + educacion_rec, data=data_rec)
+reg4 <- lm(p12_sal_ideal_gerente ~ gerenta + sexo + educacion_rec + sexo*educacion_rec, data=data_rec)
+reg5 <- lm(p12_sal_ideal_gerente ~ gerenta + sexo + educacion_rec + gerenta*sexo, data=data_rec)
+reg6 <- lm(p12_sal_ideal_gerente ~ gerenta + sexo + educacion_rec + gerenta*educacion_rec, data=data_rec)
 
-htmlreg(list(reg1, reg2, reg3, reg4))
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))
 ```
 
+## Regresion por quantiles
+
+### Cajerx sin intercepto
+
+* salario real cajero
+
+```{r, results='asis'}
+test <- data_rec %>% select(p12_sal_real_cajero, cajera, sexo, educacion_rec) %>% na.omit()
+test <- dummy_cols(test, select_columns = c("cajera", "sexo", "educacion_rec"))
+
+reg1 <- rq(p12_sal_real_cajero ~ cajera_Cajera - 1, data=test)
+reg2 <- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer - 1, data=test)
+reg3 <- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario - 1, data=test)
+reg4 <- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + sexo_Mujer*educacion_rec_Universitario - 1, data=test)
+reg5 <- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*sexo_Mujer - 1, data=test)
+reg6 <- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*educacion_rec_Universitario - 1, data=test)
+
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))
+```
+
+* salario ideal cajero
+
+```{r, results='asis'}
+test2 <- data_rec %>% select(p12_sal_ideal_cajero, cajera, sexo, educacion_rec) %>% na.omit()
+test2 <- dummy_cols(test2, select_columns = c("cajera", "sexo", "educacion_rec"))
+
+reg1 <- rq(p12_sal_ideal_cajero ~ cajera_Cajera -1, data=test2)
+reg2 <- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer -1, data=test2)
+reg3 <- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario -1, data=test2)
+reg4 <- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + sexo_Mujer*educacion_rec_Universitario -1, data=test2)
+reg5 <- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*sexo_Mujer -1, data=test2)
+reg6 <- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*educacion_rec_Universitario -1, data=test2)
+
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))
+```
+
+### Cajerx percentil 75
+
+* salario real cajero
+
+```{r, results='asis'}
+test <- data_rec %>% select(p12_sal_real_cajero, cajera, sexo, educacion_rec) %>% na.omit()
+test <- dummy_cols(test, select_columns = c("cajera", "sexo", "educacion_rec"))
+
+reg1 <- rq(p12_sal_real_cajero ~ cajera_Cajera, data=test, tau = 0.75)
+reg2 <- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer, data=test, tau = 0.75)
+reg3 <- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario, data=test, tau = 0.75)
+reg4 <- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + sexo_Mujer*educacion_rec_Universitario, data=test, tau = 0.75)
+reg5 <- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*sexo_Mujer, data=test, tau = 0.75)
+reg6 <- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*educacion_rec_Universitario, data=test, tau = 0.75)
+
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))
+```
+
+* salario ideal cajero (no results al 0.75)
+
+```{r, eval=FALSE}
+test2 <- data_rec %>% select(p12_sal_ideal_cajero, cajera, sexo, educacion_rec) %>% na.omit()
+test2 <- dummy_cols(test2, select_columns = c("cajera", "sexo", "educacion_rec"))
+
+reg1 <- rq(p12_sal_ideal_cajero ~ cajera_Cajera, data=test2, tau = 0.75)
+reg2 <- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer, data=test2, tau = 0.75)
+reg3 <- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario, data=test2, tau = 0.75)
+reg4 <- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + sexo_Mujer*educacion_rec_Universitario, data=test2, tau = 0.75)
+reg5 <- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*sexo_Mujer, data=test2, tau = 0.75)
+reg6 <- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*educacion_rec_Universitario, data=test2, tau = 0.75)
+
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))
+```
+
+
+### Gerentx con intercepto y mediana
+
+* salario ideal gerente
+
+```{r, results='asis'}
+test4 <- data_rec %>% select(p12_sal_ideal_gerente, gerenta, sexo, educacion_rec) %>% na.omit()
+test4 <- dummy_cols(test4, select_columns = c("gerenta", "sexo", "educacion_rec"))
+
+reg1 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta, data=test4)
+reg2 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer, data=test4)
+reg3 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario, data=test4)
+reg4 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + sexo_Mujer*educacion_rec_Universitario, data=test4)
+reg5 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + gerenta_Gerenta*sexo_Mujer, data=test4)
+reg6 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + gerenta_Gerenta*educacion_rec_Universitario, data=test4)
+reg7 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + gerenta_Gerenta*educacion_rec_Universitario*sexo_Mujer, data=test4)
+
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))
+```
+
+* salario real gerente
+
+```{r, results='asis'}
+test3 <- data_rec %>% select(p12_sal_real_gerente, gerenta, sexo, educacion_rec) %>% na.omit()
+test3 <- dummy_cols(test3, select_columns = c("gerenta", "sexo", "educacion_rec"))
+
+reg1 <- rq(p12_sal_real_gerente ~ gerenta_Gerenta, data=test3)
+reg2 <- rq(p12_sal_real_gerente ~ gerenta_Gerenta + sexo_Mujer, data=test3)
+reg3 <- rq(p12_sal_real_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario, data=test3)
+reg4 <- rq(p12_sal_real_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + educacion_rec_Universitario*gerenta_Gerenta, data=test3)
+reg5 <- rq(p12_sal_real_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + gerenta_Gerenta*sexo_Mujer, data=test3)
+reg6 <- rq(p12_sal_real_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + educacion_rec_Universitario*sexo_Mujer, data=test3)
+reg7 <- rq(p12_sal_real_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + gerenta_Gerenta*educacion_rec_Universitario*sexo_Mujer, data=test3)
+
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))
+```
+
+# gráficos
+
+```{r}
+plot_models(reg6, reg4, reg3,  
+            title = "", #quitar titulo
+            show.values = TRUE, #mostrar valor de efectos
+            dot.size = 1.3, #tamaño circulos
+            line.size = 1, #tamaño CI
+            value.size = 3, #tamaño valor efectoss
+            spacing = .7, #espacio entre efectos
+            digits = 0, # cuantos decimales
+            grid = TRUE, # separa en un plot por modelo
+            vline.color = "red", # linea roja en punto neutro (0)
+            axis.labels = rev(c("Gerenta", 
+                            "Mujer", 
+                            "Universitario", 
+                            "Mujer*Universitario",
+                            "Gerenta*Universitario")), #con rev porque automatico los tira en otro orden
+            show.legend = FALSE,
+            m.labels = c("Modelo 3", "Modelo 2", "Modelo 1")) + # variables dependientes
+  theme_bw(base_size = 14)+
+  scale_y_continuous(limits = c(-1500000, 5000000),
+                     breaks = seq(-1500000, 3000000, by = 1500000))+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+```
 

@@ -359,26 +359,34 @@ display: none;
 
 <div id="cargar-paquetes" class="section level1">
 <h1>Cargar paquetes</h1>
-<pre class="r"><code>options(scipen=999)
-pacman::p_load(dplyr, haven, stargazer, sjmisc, sjPlot, tidyverse, ggplot2, survey, srvyr, ggpubr, texreg)</code></pre>
+<pre class="r"><code>knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE, 
+                      cache = FALSE,
+                      results = &quot;hold&quot;)
+options(scipen=999)
+pacman::p_load(dplyr, haven, stargazer, sjmisc, sjPlot, tidyverse, ggplot2, survey, srvyr, ggpubr, texreg, quantreg, fastDummies)</code></pre>
 </div>
 <div id="cargar-base-de-datos-desiguales-2016-del-pnud" class="section level1">
 <h1>cargar base de datos desiguales 2016 (del PNUD)</h1>
 <pre class="r"><code>load(&quot;input/proc/desiguales_rec.RData&quot;)
 
 data_rec$sexo &lt;- factor(data_rec$sexo, labels = c(&quot;Hombre&quot;, &quot;Mujer&quot;))
+data_rec$cajera &lt;- factor(data_rec$cajera, labels = c(&quot;Cajero&quot;, &quot;Cajera&quot;))
+data_rec$gerenta &lt;- factor(data_rec$gerenta, labels = c(&quot;Gerente&quot;, &quot;Gerenta&quot;))
 data_rec$educacion_rec &lt;- factor(data_rec$educacion_rec, labels = c(&quot;No_Universitario&quot;, &quot;Universitario&quot;))</code></pre>
 <div id="regresiones" class="section level2">
 <h2>Regresiones</h2>
 <ul>
 <li>salario real cajero</li>
 </ul>
-<pre class="r"><code>reg1 &lt;- lm(p12_sal_real_cajero ~ sexo, data=data_rec)
-reg2 &lt;- lm(p12_sal_real_cajero ~ sexo + cajera, data=data_rec)
-reg3 &lt;- lm(p12_sal_real_cajero ~ sexo + cajera + educacion_rec, data=data_rec)
-reg4 &lt;- lm(p12_sal_real_cajero ~ sexo + cajera + educacion_rec + sexo*educacion_rec, data=data_rec)
+<pre class="r"><code>reg1 &lt;- lm(p12_sal_real_cajero ~ cajera, data=data_rec)
+reg2 &lt;- lm(p12_sal_real_cajero ~ cajera + sexo, data=data_rec)
+reg3 &lt;- lm(p12_sal_real_cajero ~ cajera + sexo + educacion_rec, data=data_rec)
+reg4 &lt;- lm(p12_sal_real_cajero ~ cajera + sexo + educacion_rec + sexo*educacion_rec, data=data_rec)
+reg5 &lt;- lm(p12_sal_real_cajero ~ cajera + sexo + educacion_rec + cajera*sexo, data=data_rec)
+reg6 &lt;- lm(p12_sal_real_cajero ~ cajera + sexo + educacion_rec + cajera*educacion_rec, data=data_rec)
 
-htmlreg(list(reg1, reg2, reg3, reg4))</code></pre>
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))</code></pre>
 <table class="texreg" style="margin: 10px auto;border-collapse: collapse;border-spacing: 0px;caption-side: bottom;color: #000000;border-top: 2px solid #000000;">
 <caption>
 Statistical models
@@ -400,6 +408,12 @@ Model 3
 <th style="padding-left: 5px;padding-right: 5px;">
 Model 4
 </th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 5
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 6
+</th>
 </tr>
 </thead>
 <tbody>
@@ -408,16 +422,22 @@ Model 4
 (Intercept)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-312795.57<sup>***</sup>
+307194.83<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 312448.65<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-309439.71<sup>***</sup>
+311993.01<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-305557.59<sup>***</sup>
+315824.16<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+317347.73<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+310608.02<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -425,16 +445,68 @@ Model 4
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(6521.91)
+(5687.79)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 (7621.24)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(8968.44)
+(8544.47)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(10637.86)
+(9512.07)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(9939.22)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(9061.82)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+cajeraCajera
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+625.19
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+713.02
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+716.59
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+578.46
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-10097.93
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+3315.35
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(8099.37)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(8099.69)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(8143.88)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(8145.55)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(13095.30)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(9916.10)
 </td>
 </tr>
 <tr>
@@ -442,16 +514,22 @@ Model 4
 sexoMujer
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
--8610.01
+ 
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 -8617.67
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
--7597.68
+-8123.69
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
--1910.16
+-13813.17
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-16797.69
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-8050.12
 </td>
 </tr>
 <tr>
@@ -459,50 +537,22 @@ sexoMujer
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(8318.59)
+ 
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 (8320.76)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(8410.25)
+(8428.74)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(11872.80)
-</td>
-</tr>
-<tr>
-<td style="padding-left: 5px;padding-right: 5px;">
-cajera
+(10467.52)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
- 
+(11776.93)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-713.02
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-918.41
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-1052.98
-</td>
-</tr>
-<tr>
-<td style="padding-left: 5px;padding-right: 5px;">
- 
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
- 
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-(8099.69)
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-(8139.16)
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-(8142.49)
+(8431.64)
 </td>
 </tr>
 <tr>
@@ -516,10 +566,16 @@ educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-5309.37
+1106.77
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-12275.32
+-8070.94
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+880.07
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+4882.44
 </td>
 </tr>
 <tr>
@@ -533,10 +589,16 @@ educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(8217.06)
+(8763.86)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(13147.76)
+(13305.84)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(8766.30)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(12014.35)
 </td>
 </tr>
 <tr>
@@ -553,7 +615,13 @@ sexoMujer:educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
--11421.51
+16186.49
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
 </td>
 </tr>
 <tr>
@@ -570,12 +638,116 @@ sexoMujer:educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(16827.35)
+(17657.44)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+cajeraCajera:sexoMujer
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+17610.03
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(16699.10)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+cajeraCajera:educacion_recUniversitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-7991.05
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(17390.29)
 </td>
 </tr>
 <tr style="border-top: 1px solid #000000;">
 <td style="padding-left: 5px;padding-right: 5px;">
 R<sup>2</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 0.00
@@ -595,7 +767,13 @@ R<sup>2</sup>
 Adj. R<sup>2</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-0.00
+-0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-0.00
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 -0.00
@@ -623,11 +801,17 @@ Num. obs.
 <td style="padding-left: 5px;padding-right: 5px;">
 2402
 </td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2402
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2402
+</td>
 </tr>
 </tbody>
 <tfoot>
 <tr>
-<td style="font-size: 0.8em;" colspan="5">
+<td style="font-size: 0.8em;" colspan="7">
 <sup>***</sup>p &lt; 0.001; <sup>**</sup>p &lt; 0.01; <sup>*</sup>p &lt;
 0.05
 </td>
@@ -637,12 +821,14 @@ Num. obs.
 <ul>
 <li>salario ideal cajero</li>
 </ul>
-<pre class="r"><code>reg1 &lt;- lm(p12_sal_ideal_cajero ~ sexo, data=data_rec)
-reg2 &lt;- lm(p12_sal_ideal_cajero ~ sexo + cajera, data=data_rec)
-reg3 &lt;- lm(p12_sal_ideal_cajero ~ sexo + cajera + educacion_rec, data=data_rec)
-reg4 &lt;- lm(p12_sal_ideal_cajero ~ sexo + cajera + educacion_rec + sexo*educacion_rec, data=data_rec)
+<pre class="r"><code>reg1 &lt;- lm(p12_sal_ideal_cajero ~ cajera, data=data_rec)
+reg2 &lt;- lm(p12_sal_ideal_cajero ~ cajera + sexo, data=data_rec)
+reg3 &lt;- lm(p12_sal_ideal_cajero ~ cajera + sexo + educacion_rec, data=data_rec)
+reg4 &lt;- lm(p12_sal_ideal_cajero ~ cajera + sexo + educacion_rec + sexo*educacion_rec, data=data_rec)
+reg5 &lt;- lm(p12_sal_ideal_cajero ~ cajera + sexo + educacion_rec + cajera*sexo, data=data_rec)
+reg6 &lt;- lm(p12_sal_ideal_cajero ~ cajera + sexo + educacion_rec + cajera*educacion_rec, data=data_rec)
 
-htmlreg(list(reg1, reg2, reg3, reg4))</code></pre>
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))</code></pre>
 <table class="texreg" style="margin: 10px auto;border-collapse: collapse;border-spacing: 0px;caption-side: bottom;color: #000000;border-top: 2px solid #000000;">
 <caption>
 Statistical models
@@ -664,6 +850,12 @@ Model 3
 <th style="padding-left: 5px;padding-right: 5px;">
 Model 4
 </th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 5
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 6
+</th>
 </tr>
 </thead>
 <tbody>
@@ -672,16 +864,22 @@ Model 4
 (Intercept)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-467257.89<sup>***</sup>
+489279.33<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 479061.04<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-459584.75<sup>***</sup>
+477596.46<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-475626.74<sup>***</sup>
+476431.46<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+462627.51<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+473553.42<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -689,16 +887,68 @@ Model 4
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(12373.44)
+(10771.04)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 (14460.32)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(16614.20)
+(15847.42)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(19658.35)
+(17634.88)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(18439.44)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(16781.83)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+cajeraCajera
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-23958.42
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-24113.95
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-27270.83
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-27243.79
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2919.51
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-19631.73
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(15300.46)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(15300.79)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(15033.11)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(15037.16)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(24248.55)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(18295.23)
 </td>
 </tr>
 <tr>
@@ -706,16 +956,22 @@ Model 4
 sexoMujer
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-16433.14
+ 
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 16671.25
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-19559.00
+15736.65
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
--3917.94
+17468.36
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+39950.34
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+15876.40
 </td>
 </tr>
 <tr>
@@ -723,50 +979,22 @@ sexoMujer
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(15745.40)
+ 
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 (15741.42)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(15536.27)
+(15587.17)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(21864.41)
-</td>
-</tr>
-<tr>
-<td style="padding-left: 5px;padding-right: 5px;">
-cajera
+(19366.86)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
- 
+(21811.89)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
--24113.95
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
--25571.11
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
--25978.80
-</td>
-</tr>
-<tr>
-<td style="padding-left: 5px;padding-right: 5px;">
- 
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
- 
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-(15300.79)
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-(15013.23)
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-(15011.58)
+(15589.80)
 </td>
 </tr>
 <tr>
@@ -780,10 +1008,16 @@ educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-36955.79<sup>*</sup>
+7312.79
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-7957.11
+10111.19
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+7778.25
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+18461.95
 </td>
 </tr>
 <tr>
@@ -797,10 +1031,16 @@ educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(15172.62)
+(16195.22)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(24318.38)
+(24640.15)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(16192.91)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(22222.30)
 </td>
 </tr>
 <tr>
@@ -817,7 +1057,13 @@ sexoMujer:educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-47401.46
+-4920.35
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
 </td>
 </tr>
 <tr>
@@ -834,7 +1080,105 @@ sexoMujer:educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(31070.39)
+(32646.54)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+cajeraCajera:sexoMujer
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-48946.68
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(30852.56)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+cajeraCajera:educacion_recUniversitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-23529.58
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(32110.29)
 </td>
 </tr>
 <tr style="border-top: 1px solid #000000;">
@@ -851,12 +1195,24 @@ R<sup>2</sup>
 0.00
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-0.01
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
 </td>
 </tr>
 <tr>
 <td style="padding-left: 5px;padding-right: 5px;">
 Adj. R<sup>2</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 0.00
@@ -887,11 +1243,17 @@ Num. obs.
 <td style="padding-left: 5px;padding-right: 5px;">
 2475
 </td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2475
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2475
+</td>
 </tr>
 </tbody>
 <tfoot>
 <tr>
-<td style="font-size: 0.8em;" colspan="5">
+<td style="font-size: 0.8em;" colspan="7">
 <sup>***</sup>p &lt; 0.001; <sup>**</sup>p &lt; 0.01; <sup>*</sup>p &lt;
 0.05
 </td>
@@ -901,12 +1263,14 @@ Num. obs.
 <ul>
 <li>salario real gerente</li>
 </ul>
-<pre class="r"><code>reg1 &lt;- lm(p12_sal_real_gerente ~ sexo, data=data_rec)
-reg2 &lt;- lm(p12_sal_real_gerente ~ sexo + gerenta, data=data_rec)
-reg3 &lt;- lm(p12_sal_real_gerente ~ sexo + gerenta + educacion_rec, data=data_rec)
-reg4 &lt;- lm(p12_sal_real_gerente ~ sexo + gerenta + educacion_rec + sexo*educacion_rec, data=data_rec)
+<pre class="r"><code>reg1 &lt;- lm(p12_sal_real_gerente ~ gerenta, data=data_rec)
+reg2 &lt;- lm(p12_sal_real_gerente ~ gerenta + sexo, data=data_rec)
+reg3 &lt;- lm(p12_sal_real_gerente ~ gerenta + sexo + educacion_rec, data=data_rec)
+reg4 &lt;- lm(p12_sal_real_gerente ~ gerenta + sexo + educacion_rec + sexo*educacion_rec, data=data_rec)
+reg5 &lt;- lm(p12_sal_real_gerente ~ gerenta + sexo + educacion_rec + gerenta*sexo, data=data_rec)
+reg6 &lt;- lm(p12_sal_real_gerente ~ gerenta + sexo + educacion_rec + gerenta*educacion_rec, data=data_rec)
 
-htmlreg(list(reg1, reg2, reg3, reg4))</code></pre>
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))</code></pre>
 <table class="texreg" style="margin: 10px auto;border-collapse: collapse;border-spacing: 0px;caption-side: bottom;color: #000000;border-top: 2px solid #000000;">
 <caption>
 Statistical models
@@ -928,6 +1292,12 @@ Model 3
 <th style="padding-left: 5px;padding-right: 5px;">
 Model 4
 </th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 5
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 6
+</th>
 </tr>
 </thead>
 <tbody>
@@ -936,16 +1306,22 @@ Model 4
 (Intercept)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-7001875.00<sup>***</sup>
+6205307.76<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 7034761.93<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-5595292.02<sup>***</sup>
+5806040.07<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-5198430.00<sup>***</sup>
+5602359.24<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+5647171.46<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+5991401.09<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -953,16 +1329,68 @@ Model 4
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(336999.11)
+(299220.91)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 (400844.41)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(454134.71)
+(432332.61)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(537601.52)
+(480094.71)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(506565.63)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(452754.29)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+gerentaGerenta
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-38072.77
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-63886.31
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-288992.86
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-296464.45
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+25284.94
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-695881.74
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(422133.01)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(421408.81)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(419262.41)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(419336.82)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(669607.52)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(512995.50)
 </td>
 </tr>
 <tr>
@@ -970,16 +1398,22 @@ Model 4
 sexoMujer
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
--1338502.82<sup>**</sup>
+ 
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 -1339795.57<sup>**</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
--993613.94<sup>*</sup>
+-895801.35<sup>*</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
--388180.98
+-580537.55
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-635413.79
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-884449.04<sup>*</sup>
 </td>
 </tr>
 <tr>
@@ -987,50 +1421,22 @@ sexoMujer
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(431692.08)
+ 
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 (431869.99)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(432006.48)
+(432429.00)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(615950.30)
-</td>
-</tr>
-<tr>
-<td style="padding-left: 5px;padding-right: 5px;">
-gerenta
+(539811.31)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
- 
+(611667.50)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
--63886.31
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
--268893.92
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
--281223.04
-</td>
-</tr>
-<tr>
-<td style="padding-left: 5px;padding-right: 5px;">
- 
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
- 
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-(421408.81)
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-(420025.97)
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-(420036.82)
+(432421.62)
 </td>
 </tr>
 <tr>
@@ -1044,10 +1450,16 @@ educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-2774697.90<sup>***</sup>
+3215349.19<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-3498827.83<sup>***</sup>
+3711609.41<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+3208383.26<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2567523.70<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -1061,10 +1473,16 @@ educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(423305.98)
+(448640.70)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(674523.57)
+(678204.51)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(448853.68)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(650296.71)
 </td>
 </tr>
 <tr>
@@ -1081,7 +1499,13 @@ sexoMujer:educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
--1191335.60
+-880059.71
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
 </td>
 </tr>
 <tr>
@@ -1098,7 +1522,105 @@ sexoMujer:educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(864105.47)
+(901950.93)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+gerentaGerenta:sexoMujer
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-515759.22
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(856743.87)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+gerentaGerenta:educacion_recUniversitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+1224541.25
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(889991.73)
 </td>
 </tr>
 <tr style="border-top: 1px solid #000000;">
@@ -1112,10 +1634,16 @@ R<sup>2</sup>
 0.00
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-0.02
+0.03
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-0.02
+0.03
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.03
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.03
 </td>
 </tr>
 <tr>
@@ -1123,16 +1651,22 @@ R<sup>2</sup>
 Adj. R<sup>2</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-0.00
+-0.00
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 0.00
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-0.02
+0.03
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.03
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 0.02
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.03
 </td>
 </tr>
 <tr style="border-bottom: 2px solid #000000;">
@@ -1151,11 +1685,17 @@ Num. obs.
 <td style="padding-left: 5px;padding-right: 5px;">
 2246
 </td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2246
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2246
+</td>
 </tr>
 </tbody>
 <tfoot>
 <tr>
-<td style="font-size: 0.8em;" colspan="5">
+<td style="font-size: 0.8em;" colspan="7">
 <sup>***</sup>p &lt; 0.001; <sup>**</sup>p &lt; 0.01; <sup>*</sup>p &lt;
 0.05
 </td>
@@ -1165,12 +1705,14 @@ Num. obs.
 <ul>
 <li>salario ideal gerente</li>
 </ul>
-<pre class="r"><code>reg1 &lt;- lm(p12_sal_ideal_gerente ~ sexo, data=data_rec)
-reg2 &lt;- lm(p12_sal_ideal_gerente ~ sexo + gerenta, data=data_rec)
-reg3 &lt;- lm(p12_sal_ideal_gerente ~ sexo + gerenta + educacion_rec, data=data_rec)
-reg4 &lt;- lm(p12_sal_ideal_gerente ~ sexo + gerenta + educacion_rec + sexo*educacion_rec, data=data_rec)
+<pre class="r"><code>reg1 &lt;- lm(p12_sal_ideal_gerente ~ gerenta, data=data_rec)
+reg2 &lt;- lm(p12_sal_ideal_gerente ~ gerenta + sexo, data=data_rec)
+reg3 &lt;- lm(p12_sal_ideal_gerente ~ gerenta + sexo + educacion_rec, data=data_rec)
+reg4 &lt;- lm(p12_sal_ideal_gerente ~ gerenta + sexo + educacion_rec + sexo*educacion_rec, data=data_rec)
+reg5 &lt;- lm(p12_sal_ideal_gerente ~ gerenta + sexo + educacion_rec + gerenta*sexo, data=data_rec)
+reg6 &lt;- lm(p12_sal_ideal_gerente ~ gerenta + sexo + educacion_rec + gerenta*educacion_rec, data=data_rec)
 
-htmlreg(list(reg1, reg2, reg3, reg4))</code></pre>
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))</code></pre>
 <table class="texreg" style="margin: 10px auto;border-collapse: collapse;border-spacing: 0px;caption-side: bottom;color: #000000;border-top: 2px solid #000000;">
 <caption>
 Statistical models
@@ -1192,6 +1734,12 @@ Model 3
 <th style="padding-left: 5px;padding-right: 5px;">
 Model 4
 </th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 5
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 6
+</th>
 </tr>
 </thead>
 <tbody>
@@ -1200,16 +1748,22 @@ Model 4
 (Intercept)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-5222189.17<sup>***</sup>
+3784227.74<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 4918584.99<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-3869212.59<sup>***</sup>
+3935076.55<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-3563841.37<sup>***</sup>
+3695343.20<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+3430360.24<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+4157716.70<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -1217,16 +1771,68 @@ Model 4
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(346264.79)
+(305319.20)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 (409425.26)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(465094.16)
+(443109.62)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(548308.71)
+(491251.81)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(518574.03)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(463791.41)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+gerentaGerenta
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+622505.87
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+598319.04
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+438039.10
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+431609.59
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+1446621.59<sup>*</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-44718.16
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(432264.78)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(430768.34)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(430131.97)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(430143.13)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(689551.36)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(523193.43)
 </td>
 </tr>
 <tr>
@@ -1234,16 +1840,22 @@ Model 4
 sexoMujer
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
--1839137.19<sup>***</sup>
+ 
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 -1830807.35<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
--1576305.02<sup>***</sup>
+-1485111.81<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
--1112842.08
+-1116689.61<sup>*</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-660962.68
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-1475244.09<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -1251,50 +1863,22 @@ sexoMujer
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(442259.32)
+ 
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 (442209.06)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(444564.90)
+(444578.50)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(626018.74)
-</td>
-</tr>
-<tr>
-<td style="padding-left: 5px;padding-right: 5px;">
-gerenta
+(551289.14)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
- 
+(625712.63)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-598319.04
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-468116.02
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-459020.07
-</td>
-</tr>
-<tr>
-<td style="padding-left: 5px;padding-right: 5px;">
- 
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
- 
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-(430768.34)
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-(430996.94)
-</td>
-<td style="padding-left: 5px;padding-right: 5px;">
-(431073.62)
+(444460.01)
 </td>
 </tr>
 <tr>
@@ -1308,10 +1892,16 @@ educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-2046144.64<sup>***</sup>
+2609899.66<sup>***</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-2614778.63<sup>***</sup>
+3205477.75<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2592577.93<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+1831342.71<sup>**</sup>
 </td>
 </tr>
 <tr>
@@ -1325,10 +1915,16 @@ educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(435143.01)
+(463241.52)
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(694107.21)
+(701671.02)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(463077.01)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(667481.01)
 </td>
 </tr>
 <tr>
@@ -1345,7 +1941,13 @@ sexoMujer:educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
--935110.20
+-1053487.80
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
 </td>
 </tr>
 <tr>
@@ -1362,7 +1964,105 @@ sexoMujer:educacion_recUniversitario
  
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-(889306.64)
+(932262.25)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+gerentaGerenta:sexoMujer
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-1646744.62
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(880272.40)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+gerentaGerenta:educacion_recUniversitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+1487394.60
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(918394.10)
 </td>
 </tr>
 <tr style="border-top: 1px solid #000000;">
@@ -1370,10 +2070,16 @@ sexoMujer:educacion_recUniversitario
 R<sup>2</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-0.01
+0.00
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 0.01
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.02
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.02
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 0.02
@@ -1387,10 +2093,16 @@ R<sup>2</sup>
 Adj. R<sup>2</sup>
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
-0.01
+0.00
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 0.01
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.02
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.02
 </td>
 <td style="padding-left: 5px;padding-right: 5px;">
 0.02
@@ -1415,11 +2127,17 @@ Num. obs.
 <td style="padding-left: 5px;padding-right: 5px;">
 2254
 </td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2254
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2254
+</td>
 </tr>
 </tbody>
 <tfoot>
 <tr>
-<td style="font-size: 0.8em;" colspan="5">
+<td style="font-size: 0.8em;" colspan="7">
 <sup>***</sup>p &lt; 0.001; <sup>**</sup>p &lt; 0.01; <sup>*</sup>p &lt;
 0.05
 </td>
@@ -1427,6 +2145,2077 @@ Num. obs.
 </tfoot>
 </table>
 </div>
+<div id="regresion-por-quantiles" class="section level2">
+<h2>Regresion por quantiles</h2>
+<div id="cajerx-sin-intercepto" class="section level3">
+<h3>Cajerx sin intercepto</h3>
+<ul>
+<li>salario real cajero</li>
+</ul>
+<pre class="r"><code>test &lt;- data_rec %&gt;% select(p12_sal_real_cajero, cajera, sexo, educacion_rec) %&gt;% na.omit()
+test &lt;- dummy_cols(test, select_columns = c(&quot;cajera&quot;, &quot;sexo&quot;, &quot;educacion_rec&quot;))
+
+reg1 &lt;- rq(p12_sal_real_cajero ~ cajera_Cajera - 1, data=test)
+reg2 &lt;- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer - 1, data=test)
+reg3 &lt;- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario - 1, data=test)
+reg4 &lt;- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + sexo_Mujer*educacion_rec_Universitario - 1, data=test)
+reg5 &lt;- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*sexo_Mujer - 1, data=test)
+reg6 &lt;- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*educacion_rec_Universitario - 1, data=test)
+
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))</code></pre>
+<table class="texreg" style="margin: 10px auto;border-collapse: collapse;border-spacing: 0px;caption-side: bottom;color: #000000;border-top: 2px solid #000000;">
+<caption>
+Statistical models
+</caption>
+<thead>
+<tr>
+<th style="padding-left: 5px;padding-right: 5px;">
+ 
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 1
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 2
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 3
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 4
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 5
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 6
+</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-top: 1px solid #000000;">
+<td style="padding-left: 5px;padding-right: 5px;">
+cajera_Cajera
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+300000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+100000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+100000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+50000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+250000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+200000.00<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(2002.16)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(26322.56)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(7418.60)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(5764.98)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(5707.69)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(20484.98)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+sexo_Mujer
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+250000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+200000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+250000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+255000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+100000.00<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(39356.60)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(5778.60)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(8617.04)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(4304.92)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(15911.03)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+educacion_rec_Universitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+150000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+290000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+50000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+250000.00<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(9126.38)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(6539.61)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(4369.23)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(31740.89)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+sexo_Mujer:educacion_rec_Universitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-260000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(12374.48)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+cajera_Cajera:sexo_Mujer
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-245000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(8322.35)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+cajera_Cajera:educacion_rec_Universitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-200000.00<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(39500.63)
+</td>
+</tr>
+<tr style="border-top: 1px solid #000000;">
+<td style="padding-left: 5px;padding-right: 5px;">
+Num. obs.
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2402
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2402
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2402
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2402
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2402
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2402
+</td>
+</tr>
+<tr style="border-bottom: 2px solid #000000;">
+<td style="padding-left: 5px;padding-right: 5px;">
+Percentile
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="font-size: 0.8em;" colspan="7">
+<sup>***</sup>p &lt; 0.001; <sup>**</sup>p &lt; 0.01; <sup>*</sup>p &lt;
+0.05
+</td>
+</tr>
+</tfoot>
+</table>
+<ul>
+<li>salario ideal cajero</li>
+</ul>
+<pre class="r"><code>test2 &lt;- data_rec %&gt;% select(p12_sal_ideal_cajero, cajera, sexo, educacion_rec) %&gt;% na.omit()
+test2 &lt;- dummy_cols(test2, select_columns = c(&quot;cajera&quot;, &quot;sexo&quot;, &quot;educacion_rec&quot;))
+
+reg1 &lt;- rq(p12_sal_ideal_cajero ~ cajera_Cajera -1, data=test2)
+reg2 &lt;- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer -1, data=test2)
+reg3 &lt;- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario -1, data=test2)
+reg4 &lt;- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + sexo_Mujer*educacion_rec_Universitario -1, data=test2)
+reg5 &lt;- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*sexo_Mujer -1, data=test2)
+reg6 &lt;- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*educacion_rec_Universitario -1, data=test2)
+
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))</code></pre>
+<table class="texreg" style="margin: 10px auto;border-collapse: collapse;border-spacing: 0px;caption-side: bottom;color: #000000;border-top: 2px solid #000000;">
+<caption>
+Statistical models
+</caption>
+<thead>
+<tr>
+<th style="padding-left: 5px;padding-right: 5px;">
+ 
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 1
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 2
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 3
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 4
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 5
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 6
+</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-top: 1px solid #000000;">
+<td style="padding-left: 5px;padding-right: 5px;">
+cajera_Cajera
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+450000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+150000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+200000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+100000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+400000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+300000.00<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(4968.33)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(26230.63)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(4697.99)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(16756.50)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(44393.08)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(16117.44)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+sexo_Mujer
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+350000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+300000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+400000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+400000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+200000.00<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(39089.59)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(3713.99)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(23358.35)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(46390.38)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(10952.27)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+educacion_rec_Universitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+200000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+400000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+100000.00<sup>**</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+390000.00<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(11802.95)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(11852.96)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(32111.85)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(11774.01)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+sexo_Mujer:educacion_rec_Universitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-400000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(23985.51)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+cajera_Cajera:sexo_Mujer
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-400000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(53784.60)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+cajera_Cajera:educacion_rec_Universitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-340000.00<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(22007.27)
+</td>
+</tr>
+<tr style="border-top: 1px solid #000000;">
+<td style="padding-left: 5px;padding-right: 5px;">
+Num. obs.
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2475
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2475
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2475
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2475
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2475
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2475
+</td>
+</tr>
+<tr style="border-bottom: 2px solid #000000;">
+<td style="padding-left: 5px;padding-right: 5px;">
+Percentile
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="font-size: 0.8em;" colspan="7">
+<sup>***</sup>p &lt; 0.001; <sup>**</sup>p &lt; 0.01; <sup>*</sup>p &lt;
+0.05
+</td>
+</tr>
+</tfoot>
+</table>
+</div>
+<div id="cajerx-percentil-75" class="section level3">
+<h3>Cajerx percentil 75</h3>
+<ul>
+<li>salario real cajero</li>
+</ul>
+<pre class="r"><code>test &lt;- data_rec %&gt;% select(p12_sal_real_cajero, cajera, sexo, educacion_rec) %&gt;% na.omit()
+test &lt;- dummy_cols(test, select_columns = c(&quot;cajera&quot;, &quot;sexo&quot;, &quot;educacion_rec&quot;))
+
+reg1 &lt;- rq(p12_sal_real_cajero ~ cajera_Cajera, data=test, tau = 0.75)
+reg2 &lt;- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer, data=test, tau = 0.75)
+reg3 &lt;- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario, data=test, tau = 0.75)
+reg4 &lt;- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + sexo_Mujer*educacion_rec_Universitario, data=test, tau = 0.75)
+reg5 &lt;- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*sexo_Mujer, data=test, tau = 0.75)
+reg6 &lt;- rq(p12_sal_real_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*educacion_rec_Universitario, data=test, tau = 0.75)
+
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))</code></pre>
+<table class="texreg" style="margin: 10px auto;border-collapse: collapse;border-spacing: 0px;caption-side: bottom;color: #000000;border-top: 2px solid #000000;">
+<caption>
+Statistical models
+</caption>
+<thead>
+<tr>
+<th style="padding-left: 5px;padding-right: 5px;">
+ 
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 1
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 2
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 3
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 4
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 5
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 6
+</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-top: 1px solid #000000;">
+<td style="padding-left: 5px;padding-right: 5px;">
+(Intercept)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+330000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+350000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+300000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+300000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+300000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+300000.00<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(6176.05)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(8262.79)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(8122.70)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(9949.43)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(9061.18)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(9282.71)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+cajera_Cajera
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-20000.00<sup>*</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-20000.00<sup>*</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(8793.02)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(8793.53)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(7239.68)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(7241.11)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(11143.09)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(10723.93)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+sexo_Mujer
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-30000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(9027.32)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(7386.53)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(11321.73)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(10144.83)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(7804.10)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+educacion_rec_Universitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+50000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+50000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+50000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+50000.00<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(7165.60)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(11356.11)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(7166.52)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(9972.73)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+sexo_Mujer:educacion_rec_Universitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(14607.66)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+cajera_Cajera:sexo_Mujer
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(14627.01)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+cajera_Cajera:educacion_rec_Universitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(15417.45)
+</td>
+</tr>
+<tr style="border-top: 1px solid #000000;">
+<td style="padding-left: 5px;padding-right: 5px;">
+Num. obs.
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2402
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2402
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2402
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2402
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2402
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2402
+</td>
+</tr>
+<tr style="border-bottom: 2px solid #000000;">
+<td style="padding-left: 5px;padding-right: 5px;">
+Percentile
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.75
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.75
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.75
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.75
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.75
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.75
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="font-size: 0.8em;" colspan="7">
+<sup>***</sup>p &lt; 0.001; <sup>**</sup>p &lt; 0.01; <sup>*</sup>p &lt;
+0.05
+</td>
+</tr>
+</tfoot>
+</table>
+<ul>
+<li>salario ideal cajero (no results al 0.75)</li>
+</ul>
+<pre class="r"><code>test2 &lt;- data_rec %&gt;% select(p12_sal_ideal_cajero, cajera, sexo, educacion_rec) %&gt;% na.omit()
+test2 &lt;- dummy_cols(test2, select_columns = c(&quot;cajera&quot;, &quot;sexo&quot;, &quot;educacion_rec&quot;))
+
+reg1 &lt;- rq(p12_sal_ideal_cajero ~ cajera_Cajera, data=test2, tau = 0.75)
+reg2 &lt;- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer, data=test2, tau = 0.75)
+reg3 &lt;- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario, data=test2, tau = 0.75)
+reg4 &lt;- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + sexo_Mujer*educacion_rec_Universitario, data=test2, tau = 0.75)
+reg5 &lt;- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*sexo_Mujer, data=test2, tau = 0.75)
+reg6 &lt;- rq(p12_sal_ideal_cajero ~ cajera_Cajera + sexo_Mujer + educacion_rec_Universitario + cajera_Cajera*educacion_rec_Universitario, data=test2, tau = 0.75)
+
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))</code></pre>
+</div>
+<div id="gerentx-con-intercepto-y-mediana" class="section level3">
+<h3>Gerentx con intercepto y mediana</h3>
+<ul>
+<li>salario ideal gerente</li>
+</ul>
+<pre class="r"><code>test4 &lt;- data_rec %&gt;% select(p12_sal_ideal_gerente, gerenta, sexo, educacion_rec) %&gt;% na.omit()
+test4 &lt;- dummy_cols(test4, select_columns = c(&quot;gerenta&quot;, &quot;sexo&quot;, &quot;educacion_rec&quot;))
+
+reg1 &lt;- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta, data=test4)
+reg2 &lt;- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer, data=test4)
+reg3 &lt;- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario, data=test4)
+reg4 &lt;- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + sexo_Mujer*educacion_rec_Universitario, data=test4)
+reg5 &lt;- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + gerenta_Gerenta*sexo_Mujer, data=test4)
+reg6 &lt;- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + gerenta_Gerenta*educacion_rec_Universitario, data=test4)
+reg7 &lt;- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + gerenta_Gerenta*educacion_rec_Universitario*sexo_Mujer, data=test4)
+
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))</code></pre>
+<table class="texreg" style="margin: 10px auto;border-collapse: collapse;border-spacing: 0px;caption-side: bottom;color: #000000;border-top: 2px solid #000000;">
+<caption>
+Statistical models
+</caption>
+<thead>
+<tr>
+<th style="padding-left: 5px;padding-right: 5px;">
+ 
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 1
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 2
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 3
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 4
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 5
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 6
+</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-top: 1px solid #000000;">
+<td style="padding-left: 5px;padding-right: 5px;">
+(Intercept)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2000000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+3000000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2000000.00<sup>**</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2000000.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2000000.00<sup>**</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2000000.00<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(100365.14)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(116481.60)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(647828.11)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(8153285860007645616006448002280062.00)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(751981.60)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(488238.86)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+gerenta_Gerenta
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(142127.04)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(69550.08)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(122951.83)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(286726433303337312.00)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(570420.32)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(131483.05)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+sexo_Mujer
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-1000000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-100000.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-100000.00
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(108810.72)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(608209.77)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(8153285860007629475266800224200048.00)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(725182.12)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(447863.37)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+educacion_rec_Universitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+3000000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+3000000.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+3000000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2500000.00<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(433826.12)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(8153285860007660604024644668084220.00)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(434372.21)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(386788.90)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+sexo_Mujer:educacion_rec_Universitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-1000000.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(8153285860007649074468824468666660.00)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+gerenta_Gerenta:sexo_Mujer
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-200000.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(582338.94)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+gerenta_Gerenta:educacion_rec_Universitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+500000.00
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(286024.21)
+</td>
+</tr>
+<tr style="border-top: 1px solid #000000;">
+<td style="padding-left: 5px;padding-right: 5px;">
+Num. obs.
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2254
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2254
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2254
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2254
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2254
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2254
+</td>
+</tr>
+<tr style="border-bottom: 2px solid #000000;">
+<td style="padding-left: 5px;padding-right: 5px;">
+Percentile
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="font-size: 0.8em;" colspan="7">
+<sup>***</sup>p &lt; 0.001; <sup>**</sup>p &lt; 0.01; <sup>*</sup>p &lt;
+0.05
+</td>
+</tr>
+</tfoot>
+</table>
+<ul>
+<li>salario real gerente</li>
+</ul>
+<pre class="r"><code>test3 &lt;- data_rec %&gt;% select(p12_sal_real_gerente, gerenta, sexo, educacion_rec) %&gt;% na.omit()
+test3 &lt;- dummy_cols(test3, select_columns = c(&quot;gerenta&quot;, &quot;sexo&quot;, &quot;educacion_rec&quot;))
+
+reg1 &lt;- rq(p12_sal_real_gerente ~ gerenta_Gerenta, data=test3)
+reg2 &lt;- rq(p12_sal_real_gerente ~ gerenta_Gerenta + sexo_Mujer, data=test3)
+reg3 &lt;- rq(p12_sal_real_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario, data=test3)
+reg4 &lt;- rq(p12_sal_real_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + educacion_rec_Universitario*gerenta_Gerenta, data=test3)
+reg5 &lt;- rq(p12_sal_real_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + gerenta_Gerenta*sexo_Mujer, data=test3)
+reg6 &lt;- rq(p12_sal_real_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + educacion_rec_Universitario*sexo_Mujer, data=test3)
+reg7 &lt;- rq(p12_sal_real_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + gerenta_Gerenta*educacion_rec_Universitario*sexo_Mujer, data=test3)
+
+htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))</code></pre>
+<table class="texreg" style="margin: 10px auto;border-collapse: collapse;border-spacing: 0px;caption-side: bottom;color: #000000;border-top: 2px solid #000000;">
+<caption>
+Statistical models
+</caption>
+<thead>
+<tr>
+<th style="padding-left: 5px;padding-right: 5px;">
+ 
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 1
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 2
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 3
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 4
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 5
+</th>
+<th style="padding-left: 5px;padding-right: 5px;">
+Model 6
+</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-top: 1px solid #000000;">
+<td style="padding-left: 5px;padding-right: 5px;">
+(Intercept)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+3000000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+4000000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+3000000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+3000000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+3000000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+3000000.00<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(100782.82)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(244759.52)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(218296.04)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(157490.04)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(273317.42)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(165879.79)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+gerenta_Gerenta
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(142212.19)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(176876.27)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(181486.69)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(160350.70)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(328377.06)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(155202.87)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+sexo_Mujer
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-1000000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(244833.33)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(217110.93)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(162235.48)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(304150.15)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(183694.28)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+educacion_rec_Universitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2000000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2000000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2000000.00<sup>***</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+3000000.00<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(234399.44)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(141525.53)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(217863.47)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(381940.36)
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+gerenta_Gerenta:educacion_rec_Universitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+1000000.00<sup>*</sup>
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(417499.45)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+gerenta_Gerenta:sexo_Mujer
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.00
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(384984.17)
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+sexo_Mujer:educacion_rec_Universitario
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+-1000000.00<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+ 
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+(432185.32)
+</td>
+</tr>
+<tr style="border-top: 1px solid #000000;">
+<td style="padding-left: 5px;padding-right: 5px;">
+Num. obs.
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2246
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2246
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2246
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2246
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2246
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+2246
+</td>
+</tr>
+<tr style="border-bottom: 2px solid #000000;">
+<td style="padding-left: 5px;padding-right: 5px;">
+Percentile
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+<td style="padding-left: 5px;padding-right: 5px;">
+0.50
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="font-size: 0.8em;" colspan="7">
+<sup>***</sup>p &lt; 0.001; <sup>**</sup>p &lt; 0.01; <sup>*</sup>p &lt;
+0.05
+</td>
+</tr>
+</tfoot>
+</table>
+</div>
+</div>
+</div>
+<div id="gráficos" class="section level1">
+<h1>gráficos</h1>
+<pre class="r"><code>plot_models(reg6, reg4, reg3,  
+            title = &quot;&quot;, #quitar titulo
+            show.values = TRUE, #mostrar valor de efectos
+            dot.size = 1.3, #tamaño circulos
+            line.size = 1, #tamaño CI
+            value.size = 3, #tamaño valor efectoss
+            spacing = .7, #espacio entre efectos
+            digits = 0, # cuantos decimales
+            grid = TRUE, # separa en un plot por modelo
+            vline.color = &quot;red&quot;, # linea roja en punto neutro (0)
+            axis.labels = rev(c(&quot;Gerenta&quot;, 
+                            &quot;Mujer&quot;, 
+                            &quot;Universitario&quot;, 
+                            &quot;Mujer*Universitario&quot;,
+                            &quot;Gerenta*Universitario&quot;)), #con rev porque automatico los tira en otro orden
+            show.legend = FALSE,
+            m.labels = c(&quot;Modelo 3&quot;, &quot;Modelo 2&quot;, &quot;Modelo 1&quot;)) + # variables dependientes
+  theme_bw(base_size = 14)+
+  scale_y_continuous(limits = c(-1500000, 5000000),
+                     breaks = seq(-1500000, 3000000, by = 1500000))+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))</code></pre>
+<p><img src="data:image/png;base64,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X3zyuVdu9Vjg1ivPPdmxPXo427z10pMv3mzM7NZ9kd+c2956ffPFY90/snntu/XW3NneB+nWS092arM/jGMLcCQo4AGAo+etua++0vp77OXX7m60B99tbzx+5avrFfOFq423W+3pba3Pfc5m98pzz70SQqP5ufXRu6+9vNFS/cpXz/7mS7dCCGMvvLzeQn23vXn91ktf31L23nzxuY1AXnjtblskD+/efe3lfcRy88WNPvabdnrzil957uzm2wq7P7YA9EkBDwAcOW/duN4sTcdevvv69IXTp9ffOn36wtXX1/uYb6+Y92ns5buvX93Y3ukL0xsbC7du3WouMX1hfYnT0237E1759qb9ufntVq3cWvFGJOH06Qvtn711/cYuKua2Mnzs5bsP23e6ueL1+n/zQTq8YwsQPwU8AJBKrzx3rH9b+mvffbPVtPwPP3Z6+6rDhS+uN07/xx8OsJ147OV/Nb1te20b67JEuPDZzk+tb9TvL/xuh4/1/GxvN7/+0noZ3mmPQginp/9Va8fbW9MP69gCHAUKeADgyHnyzHoH8K++2Gl899PTrze7fb/erTDeg7GLn+m0stMf+4c7LNG2w5uK3mZf+N7d+Nc/e+vNu8CNp3MAAAQcSURBVP3uaT93BkI4Pf27zZsDba37h3RsAY4EBTwAcOS0lcy3XnnuyWPHzr54APObdavO23RutN6Tt9662ZhYru1J9r4/+8P/2Pxr7MyTvRbscHPgcI4twNGggAcAUmlX08htbaC+cHXzVGq3XnnlpeeefPLYsWPHUjpV+Vtv3Zybe/HFs+sTrz/55HPPvfTSK7d2Xb2H9m7wGzPEd7Rxc2CjZ0B8xxYgMRTwAMBRdOFql7nKbzXLzbNnO3YAT563br549tixJ5987qWXXnnl1q09VeyDFc+xBUgYBTwAcDSdvnD19S1TrbW7deuV5zrOcp4o3adqHxsbe+GFl1+7e/fuyx3jG6ooji1A8ijgAYAjrDEjWnNu85dfGNtab26b5TxR3pr7zbap2sdeePm11+62poJ//fXXr17dNIvbXvT9oEKHAenSfWwBkkgBDwDQqDanr77erDfbGo53N336gdqY6y288Nrd11+/On3hwunTW0v2jQfa+9Zl0Pu9SuOxBUgkBTwAcNTcfLHL/PANp09fuPr6RsfzXcy+drDaxop/+YsXurW0byzVv42R5HddYkdybAGSSQEPABw1bVOVf7vbc9hts6El1UbTeo/Z59pa6XfhwmdbA8nfeunrPR5V316uR3JsAZJJAQ8AHDWnP3Nxvcr8aufHsN+a++orzT9f+OyFTkscvp1r5bfmzj73Ssd3drJRwYdXnusyZHzb2sde/mLzIEVybAGSSQEPABw5p6d/d6OF+ckts5O/9dbNF89uTHC+ucbc1Ln8kKdCa6+Vnzv74tzNTTHMvXi2bZr2jp/vFUv7bO6vPLflGDVW33aMfndjCLu9H1sAdqKABwBS6ZXnju1S+0PZ7fVpa3bypifb52V74bWr3WrMWy891/jQoY2l3lYrN4Joj+Gl7ZPLdR+RrlMsF662TUC3+RhtWv3Yy3c3H6MBHFsAOlLAAwBH0oWrmwZE72Ds5bsPt5WYF764bVr1QxyJbVOR3cnYCy+/tl5Ob93RnWI5Pf36Dsdo7IWX73aYQG6PxxaAHSjgAYAj6vSFq68/3D5F+djY2Asvv3b3bqepzcN6Vdv2ibEwiLnW9uj09OsP777WIYQXXn7t7sOHr1+dvrDxPPvWZ+V3jqV1jF7oeIwevn614zHa67EFoLdjDx8+POx9AAAAAHagBR4AAABSQAEPAAAAKaCABwAAgBRQwAMAAEAKKOABAAAgBRTwAAAAkAIKeAAAAEgBBTwAAACkgAIeAAAAUkABDwAAACmggAcAAIAUUMADAABACijgAQAAIAUU8AAAAJACCngAAABIAQU8AAAApIACHgAAAFJAAQ8AAAApoIAHAACAFFDAAwAAQAoo4AEAACAFFPAAAACQAgp4AAAASAEFPAAAAKTA/w/hpvvImxvldAAAAABJRU5ErkJggg==" width="672" /></p>
 </div>
 
 
