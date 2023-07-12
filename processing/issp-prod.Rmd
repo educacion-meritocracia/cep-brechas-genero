@@ -1354,7 +1354,6 @@ dat <- rbind(data, data2, data3)
 ```
 
 ```{r}
-install.packages("quantreg")
 library(quantreg)
 ```
 
@@ -1419,4 +1418,30 @@ htmlreg(list(reg1, reg2, reg3, reg5, reg6, reg7, reg8),
 webshot2::webshot(url ="output/tables/reg_brechas.html" ,file ="output/tables/reg_brechas.png",)
 ```
 
+## gráfico
+
+```{r}
+issp_reg_coefplot <- plot_models(reg8, reg3,  
+            title = "", #quitar titulo
+            show.values = TRUE, #mostrar valor de efectos
+            dot.size = 1.3, #tamaño circulos
+            line.size = 1, #tamaño CI
+            value.size = 3, #tamaño valor efectoss
+            spacing = .7, #espacio entre efectos
+            digits = 2, # cuantos decimales
+            grid = TRUE, # separa en un plot por modelo
+            vline.color = "red", # linea roja en punto neutro (0)
+            axis.labels = rev(c("Mujer",
+                              "Ed. media completa",
+                              "Educación universitaria",
+                              "Año 2009",
+                              "Año 2019",
+                              "Brecha percibida")), #con rev porque automatico los tira en otro orden
+            show.legend = FALSE,
+            m.labels = c("Brecha justa", "Brecha percibida")) + # variables dependientes
+  theme_bw(base_size = 14)
+
+issp_reg_coefplot
+ggsave(issp_reg_coefplot, file="output/graphs/issp_reg_coefplot.png", width = 10, height = 7)
+```
 

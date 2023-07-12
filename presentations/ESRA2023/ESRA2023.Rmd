@@ -158,25 +158,25 @@ class: roja bottom right
 ---
 class: middle center
 
-![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/median_salarios_real.png)
+![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/des_median_salarios_real.png)
 ---
 class: middle center
 
-![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/median_salarios_ideal.png)
-
----
-class: middle center
-
-![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/dif_salarios_ambos_educ.png)
-
+![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/des_median_salarios_ideal.png)
 
 ---
 class: middle center
 
-![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/dif_salarios_real_educ_sexo.png)
+![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/des_dif_salarios_ambos_educ.png)
 
 
 ---
 class: middle center
 
-![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/dif_salarios_ideal_educ_sexo.png)
+![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/des_dif_salarios_real_educ_sexo.png)
+
+
+---
+class: middle center
+
+![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/des_dif_salarios_ideal_educ_sexo.png)

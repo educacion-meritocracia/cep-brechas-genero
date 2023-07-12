@@ -29,7 +29,7 @@ names(data)
 data_rec <- data %>% select(WEIGHT=pondera_total,
                         sexo,
                         educacion=p51,
-                        p12_aleatorio, # 1= cajero gerenta doctora diputado; 0= cajera gerente doctor diputada
+                        aleatorio=p12_aleatorio, # 1= cajero gerenta doctora diputado; 0= cajera gerente doctor diputada
                         p12_sal_real_cajero_h, # hombre
                         p12_sal_real_cajero_m, # mujer
                         p12_sal_real_cajero, #ambos
@@ -74,8 +74,8 @@ stargazer(as.data.frame(data_rec), type = "text", median = TRUE )
 
 ```{r}
 # 1= cajero gerenta doctora diputado; 0= cajera gerente doctor diputada
-data_rec$cajera <- ifelse(data_rec$p12_aleatorio==1, 1, 0)
-data_rec$gerenta <- ifelse(data_rec$p12_aleatorio==0, 1, 0)
+data_rec$cajera <- ifelse(data_rec$aleatorio==1, 1, 0)
+data_rec$gerenta <- ifelse(data_rec$aleatorio==0, 1, 0)
 
 # para salarios real e ideal según oficio
 data_rec <- data_rec %>% 

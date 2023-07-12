@@ -20,7 +20,12 @@ pacman::p_load(dplyr, haven, stargazer, sjmisc, sjPlot, tidyverse, ggplot2, surv
 
 ```{r}
 load("input/proc/desiguales_rec.RData")
+head(select(data_rec, aleatorio, cajera, p12_sal_real_cajero_h, p12_sal_real_cajero_m, p12_sal_real_cajero))
+head(select(data_rec, aleatorio, gerenta, p12_sal_real_gerente_h, p12_sal_real_gerente_m, p12_sal_real_gerente))
+```
 
+
+```{r}
 data_rec$sexo <- factor(data_rec$sexo, labels = c("Hombre", "Mujer"))
 data_rec$cajera <- factor(data_rec$cajera, labels = c("Cajero", "Cajera"))
 data_rec$gerenta <- factor(data_rec$gerenta, labels = c("Gerente", "Gerenta"))
@@ -162,14 +167,29 @@ test4 <- dummy_cols(test4, select_columns = c("gerenta", "sexo", "educacion_rec"
 
 reg1 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta, data=test4)
 reg2 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer, data=test4)
-reg3 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario, data=test4)
-reg4 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + sexo_Mujer*educacion_rec_Universitario, data=test4)
-reg5 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + gerenta_Gerenta*sexo_Mujer, data=test4)
-reg6 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + gerenta_Gerenta*educacion_rec_Universitario, data=test4)
-reg7 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec_Universitario + gerenta_Gerenta*educacion_rec_Universitario*sexo_Mujer, data=test4)
+reg3 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec, data=test4)
+reg4 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer*educacion_rec, data=test4)
+reg5 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec + gerenta_Gerenta*sexo_Mujer, data=test4)
+reg6 <- rq(p12_sal_ideal_gerente ~ gerenta_Gerenta + sexo_Mujer + educacion_rec + gerenta_Gerenta*educacion_rec, data=test4)
 
 htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))
 ```
+
+```{r}
+test4 %>% select(p12_sal_ideal_gerente, sexo) %>% group_by(sexo) %>% summarise(q0=quantile(p12_sal_ideal_gerente, probs=0),
+                                                                                                 q1=quantile(p12_sal_ideal_gerente, probs=.25),
+                                                                                                 q2=quantile(p12_sal_ideal_gerente, probs=.5),
+                                                                                                 q3=quantile(p12_sal_ideal_gerente, probs=.75),
+                                                                                                 q4=quantile(p12_sal_ideal_gerente, probs=1))
+```
+```{r}
+test4 %>% select(p12_sal_ideal_gerente, educacion_rec) %>% group_by(educacion_rec) %>% summarise(q0=quantile(p12_sal_ideal_gerente, probs=0),
+                                                                                                 q1=quantile(p12_sal_ideal_gerente, probs=.25),
+                                                                                                 q2=quantile(p12_sal_ideal_gerente, probs=.5),
+                                                                                                 q3=quantile(p12_sal_ideal_gerente, probs=.75),
+                                                                                                 q4=quantile(p12_sal_ideal_gerente, probs=1))
+```
+
 
 * salario real gerente
 
@@ -191,7 +211,7 @@ htmlreg(list(reg1, reg2, reg3, reg4, reg5, reg6))
 # gráficos
 
 ```{r}
-plot_models(reg6, reg4, reg3,  
+des_reg_coefplot <- plot_models(reg6, reg4, reg3,  
             title = "", #quitar titulo
             show.values = TRUE, #mostrar valor de efectos
             dot.size = 1.3, #tamaño circulos
@@ -212,5 +232,8 @@ plot_models(reg6, reg4, reg3,
   scale_y_continuous(limits = c(-1500000, 5000000),
                      breaks = seq(-1500000, 3000000, by = 1500000))+
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+
+des_reg_coefplot
+ggsave(des_reg_coefplot, file="output/graphs/des_reg_coefplot.png", width = 10, height = 7)
 ```
 

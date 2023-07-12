@@ -1565,7 +1565,7 @@ font-size: 0.95em;
 
 
 <h1 class="title toc-ignore">desiguales preparacion</h1>
-<h4 class="date">lunes 10 julio 2023 15:52:44</h4>
+<h4 class="date">miércoles 12 julio 2023 15:22:52</h4>
 
 </div>
 
@@ -1749,7 +1749,7 @@ dim(data) # 2613</code></pre>
 <pre class="r"><code>data_rec &lt;- data %&gt;% select(WEIGHT=pondera_total,
                         sexo,
                         educacion=p51,
-                        p12_aleatorio, # 1= cajero gerenta doctora diputado; 0= cajera gerente doctor diputada
+                        aleatorio=p12_aleatorio, # 1= cajero gerenta doctora diputado; 0= cajera gerente doctor diputada
                         p12_sal_real_cajero_h, # hombre
                         p12_sal_real_cajero_m, # mujer
                         p12_sal_real_cajero, #ambos
@@ -1790,7 +1790,7 @@ dim(data) # 2613</code></pre>
 ## WEIGHT                  2,613     1.000         1.349      0.033   0.605     14.150   
 ## sexo                    2,613     1.613         0.487        1       2          2     
 ## educacion               2,613     5.282         6.469        1       4         99     
-## p12_aleatorio           2,613     0.495         0.500        0       0          1     
+## aleatorio               2,613     0.495         0.500        0       0          1     
 ## p12_sal_real_cajero_h   1,320  284,399.100   190,283.600     0    295,000   3,500,000 
 ## p12_sal_real_cajero_m   1,293  283,071.800   224,442.000     0    280,000   3,500,000 
 ## p12_sal_real_cajero     2,613  283,742.300   207,850.100     0    290,000   3,500,000 
@@ -1826,8 +1826,8 @@ dim(data) # 2613</code></pre>
 <li></li>
 </ul>
 <pre class="r"><code># 1= cajero gerenta doctora diputado; 0= cajera gerente doctor diputada
-data_rec$cajera &lt;- ifelse(data_rec$p12_aleatorio==1, 1, 0)
-data_rec$gerenta &lt;- ifelse(data_rec$p12_aleatorio==0, 1, 0)
+data_rec$cajera &lt;- ifelse(data_rec$aleatorio==1, 1, 0)
+data_rec$gerenta &lt;- ifelse(data_rec$aleatorio==0, 1, 0)
 
 # para salarios real e ideal según oficio
 data_rec &lt;- data_rec %&gt;% 
@@ -1855,6 +1855,7 @@ stargazer(as.data.frame(data_rec), type = &quot;text&quot;, median = TRUE )</cod
 ## WEIGHT                  2,613     1.000         1.349       0.033    0.605     14.150   
 ## sexo                    2,613     1.613         0.487         1        2          2     
 ## educacion               2,613     5.282         6.469         1        4         99     
+## aleatorio               2,613     0.495         0.500         0        0          1     
 ## p12_sal_real_cajero_h   1,222  307,194.800   179,189.600   23,000   300,000   3,500,000 
 ## p12_sal_real_cajero_m   1,189  307,820.000   217,170.400   25,000   300,000   3,500,000 
 ## p12_sal_real_cajero     2,411  307,503.100   198,787.600   23,000   300,000   3,500,000 

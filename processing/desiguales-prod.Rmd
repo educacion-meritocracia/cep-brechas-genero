@@ -29,7 +29,7 @@ load("input/proc/desiguales_rec.RData")
 ## Ponderadores
 ```{r}
 data_rec$sexo <- factor(data_rec$sexo, labels = c("Hombre", "Mujer"))
-
+data_rec$sexo <- factor(data_rec$sexo, levels = c("Mujer", "Hombre"))
 desiguales_pond <- data_rec %>% as_survey_design(ids = 1,
                                                  weights = WEIGHT)
 ```
@@ -48,8 +48,7 @@ salario_real = desiguales_pond %>% group_by(sexo) %>%
             doctor_hombre = survey_mean(p12_sal_real_doctor_h, na.rm = T),
             doctor_mujer = survey_mean(p12_sal_real_doctor_m, na.rm = T),
             diputado_hombre = survey_mean(p12_sal_real_diput_h, na.rm = T),
-            diputado_mujer = survey_mean(p12_sal_real_diput_m, na.rm = T),
-            propio = survey_mean(p91_monto, na.rm=T)
+            diputado_mujer = survey_mean(p12_sal_real_diput_m, na.rm = T)
             )
 ```
 
@@ -62,12 +61,11 @@ salario_real_long <- salario_real %>%
                         "gerente_hombre", 
                         "gerente_mujer",
                         "diputado_hombre", 
-                        "diputado_mujer",
-                        "propio"), 
+                        "diputado_mujer"), 
                names_to = "oficio",
                values_to = "mean")
 
-salario_real_long$oficio <- factor(salario_real_long$oficio, levels = c("propio", "cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "gerente_hombre", "gerente_mujer", "diputado_hombre", "diputado_mujer"))
+salario_real_long$oficio <- factor(salario_real_long$oficio, levels = c("cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "diputado_hombre", "diputado_mujer", "gerente_hombre", "gerente_mujer"))
 ```
 
 ## Gráfico diferencias de media
@@ -82,7 +80,7 @@ p12_sal_perc_h <- salario_real_long %>% filter(sexo=="Hombre") %>%
   ylim(0, 9000000) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-  scale_x_discrete(label = c("Salario propio", "Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Gerente Hombre", "Gerente Mujer", "Diputado Hombre", "Diputada Mujer"))
+  scale_x_discrete(label = c("Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Diputado Hombre", "Diputada Mujer", "Gerente Hombre", "Gerente Mujer"))
 
 p12_sal_perc_h
 ```
@@ -97,7 +95,7 @@ p12_sal_perc_m <- salario_real_long %>% filter(sexo=="Mujer") %>%
   ylim(0, 9000000) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-  scale_x_discrete(label = c("Salario propio", "Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Gerente Hombre", "Gerente Mujer", "Diputado Hombre", "Diputada Mujer"))
+  scale_x_discrete(label = c("Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Diputado Hombre", "Diputada Mujer", "Gerente Hombre", "Gerente Mujer"))
 
 p12_sal_perc_m
 ```
@@ -116,8 +114,7 @@ salario_ideal = desiguales_pond %>% group_by(sexo) %>%
             doctor_hombre = survey_mean(p12_sal_ideal_doctor_h, na.rm = T),
             doctor_mujer = survey_mean(p12_sal_ideal_doctor_m, na.rm = T),
             diputado_hombre = survey_mean(p12_sal_ideal_diput_h, na.rm = T),
-            diputado_mujer = survey_mean(p12_sal_ideal_diput_m, na.rm = T),
-            propio = survey_mean(p75_monto, na.rm=T)
+            diputado_mujer = survey_mean(p12_sal_ideal_diput_m, na.rm = T)
             )
 ```
 
@@ -131,12 +128,11 @@ salario_ideal_long <- salario_ideal %>%
                         "doctor_hombre", 
                         "doctor_mujer", 
                         "diputado_hombre", 
-                        "diputado_mujer",
-                        "propio"), 
+                        "diputado_mujer"), 
                names_to = "oficio",
                values_to = "mean")
 
-salario_ideal_long$oficio <- factor(salario_ideal_long$oficio, levels = c("propio", "cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "gerente_hombre", "gerente_mujer", "diputado_hombre", "diputado_mujer"))
+salario_ideal_long$oficio <- factor(salario_ideal_long$oficio, levels = c("cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "diputado_hombre", "diputado_mujer", "gerente_hombre", "gerente_mujer"))
 ```
 
 ## Gráfico diferencias de media
@@ -147,11 +143,11 @@ salario_ideal_long$oficio <- factor(salario_ideal_long$oficio, levels = c("propi
 p12_sal_ideal_h <- salario_ideal_long %>% filter(sexo=="Hombre") %>% 
   ggplot(aes(x = oficio, y = mean)) +
   geom_point(size=4) +
-  xlab("Oficio") + ylab("Salario ideal")  +
+  xlab("Oficio") + ylab("Salario justo")  +
   ylim(0, 9000000) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-  scale_x_discrete(label = c("Salario propio", "Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Gerente Hombre", "Gerente Mujer", "Diputado Hombre", "Diputada Mujer"))
+  scale_x_discrete(label = c("Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Diputado Hombre", "Diputada Mujer", "Gerente Hombre", "Gerente Mujer"))
 
 p12_sal_ideal_h
 ```
@@ -162,11 +158,11 @@ p12_sal_ideal_h
 p12_sal_ideal_m <- salario_ideal_long %>% filter(sexo=="Mujer") %>% 
   ggplot(aes(x = oficio, y = mean)) +
   geom_point(size=4) +
-  xlab("Oficio") + ylab("Salario ideal")  +
+  xlab("Oficio") + ylab("Salario justo")  +
   ylim(0, 9000000) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-  scale_x_discrete(label = c("Salario propio", "Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Gerente Hombre", "Gerente Mujer", "Diputado Hombre", "Diputada Mujer"))
+  scale_x_discrete(label = c("Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Diputado Hombre", "Diputada Mujer", "Gerente Hombre", "Gerente Mujer"))
 
 p12_sal_ideal_m
 ```
@@ -175,8 +171,8 @@ p12_sal_ideal_m
 p12_sal_m <- ggarrange(p12_sal_perc_m, p12_sal_ideal_m, ncol=2)
 p12_sal_h <- ggarrange(p12_sal_perc_h, p12_sal_ideal_h, ncol=2)
 
-ggsave(p12_sal_m, file = "output/graphs/media_salarios_mujeres.png", width = 8,height = 10)
-ggsave(p12_sal_h, file = "output/graphs/media_salarios_hombres.png", width = 8,height = 10)
+ggsave(p12_sal_m, file = "output/graphs/des_media_salarios_mujeres.png", width = 8,height = 10)
+ggsave(p12_sal_h, file = "output/graphs/des_media_salarios_hombres.png", width = 8,height = 10)
 ```
 
 ### comparacion ambos tipos de salarios
@@ -224,8 +220,7 @@ salario_real = desiguales_pond %>% group_by(sexo) %>%
             doctor_hombre = survey_median(p12_sal_real_doctor_h, na.rm = T),
             doctor_mujer = survey_median(p12_sal_real_doctor_m, na.rm = T),
             diputado_hombre = survey_median(p12_sal_real_diput_h, na.rm = T),
-            diputado_mujer = survey_median(p12_sal_real_diput_m, na.rm = T),
-            propio = survey_median(p91_monto, na.rm=T)
+            diputado_mujer = survey_median(p12_sal_real_diput_m, na.rm = T)
             )
 ```
 
@@ -239,12 +234,11 @@ salario_real_long <- salario_real %>%
                         "doctor_hombre", 
                         "doctor_mujer", 
                         "diputado_hombre", 
-                        "diputado_mujer",
-                        "propio"), 
+                        "diputado_mujer"), 
                names_to = "oficio",
                values_to = "mean")
 
-salario_real_long$oficio <- factor(salario_real_long$oficio, levels = c("propio", "cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "gerente_hombre", "gerente_mujer", "diputado_hombre", "diputado_mujer"))
+salario_real_long$oficio <- factor(salario_real_long$oficio, levels = c("cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "diputado_hombre", "diputado_mujer", "gerente_hombre", "gerente_mujer"))
 ```
 
 ## Gráfico diferencias de mediana
@@ -259,7 +253,7 @@ p12_sal_real_h <- salario_real_long %>% filter(sexo=="Hombre") %>%
   theme_bw() +
   ylim(0, 9000000) +
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-  scale_x_discrete(label = c("Salario propio", "Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Gerente Hombre", "Gerente Mujer", "Diputado Hombre", "Diputada Mujer"))
+  scale_x_discrete(label = c("Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Diputado Hombre", "Diputada Mujer", "Gerente Hombre", "Gerente Mujer"))
 
 p12_sal_real_h
 ```
@@ -274,7 +268,7 @@ p12_sal_real_m <- salario_real_long %>% filter(sexo=="Mujer") %>%
   theme_bw() +
   ylim(0, 9000000) +
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-  scale_x_discrete(label = c("Salario propio", "Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Gerente Hombre", "Gerente Mujer", "Diputado Hombre", "Diputada Mujer"))
+  scale_x_discrete(label = c("Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Diputado Hombre", "Diputada Mujer", "Gerente Hombre", "Gerente Mujer"))
 
 p12_sal_real_m
 ```
@@ -291,8 +285,7 @@ salario_ideal = desiguales_pond %>% group_by(sexo) %>%
             doctor_hombre = survey_median(p12_sal_ideal_doctor_h, na.rm = T),
             doctor_mujer = survey_median(p12_sal_ideal_doctor_m, na.rm = T),
             diputado_hombre = survey_median(p12_sal_ideal_diput_h, na.rm = T),
-            diputado_mujer = survey_median(p12_sal_ideal_diput_m, na.rm = T),
-            propio = survey_median(p75_monto, na.rm=T) 
+            diputado_mujer = survey_median(p12_sal_ideal_diput_m, na.rm = T) 
             )
 ```
 
@@ -305,13 +298,12 @@ salario_ideal_long <- salario_ideal %>%
                         "doctor_hombre", 
                         "doctor_mujer", 
                         "diputado_hombre", 
-                        "diputado_mujer",
-                        "propio"), 
+                        "diputado_mujer"), 
                names_to = "oficio",
                values_to = "mean")
 
 
-salario_ideal_long$oficio <- factor(salario_ideal_long$oficio, levels = c("propio", "cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "gerente_hombre", "gerente_mujer", "diputado_hombre", "diputado_mujer"))
+salario_ideal_long$oficio <- factor(salario_ideal_long$oficio, levels = c("cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "diputado_hombre", "diputado_mujer", "gerente_hombre", "gerente_mujer"))
 ```
 
 ## Gráfico diferencias de mediana
@@ -322,11 +314,11 @@ salario_ideal_long$oficio <- factor(salario_ideal_long$oficio, levels = c("propi
 p12_sal_ideal_h <- salario_ideal_long %>% filter(sexo=="Hombre") %>% 
   ggplot(aes(x = oficio, y = mean)) +
   geom_point(size=4) +
-  xlab("Oficio") + ylab("Salario ideal")  +
+  xlab("Oficio") + ylab("Salario justo")  +
   theme_bw() +
   ylim(0, 9000000) +
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-  scale_x_discrete(label = c("Salario propio", "Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Gerente Hombre", "Gerente Mujer", "Diputado Hombre", "Diputada Mujer"))
+  scale_x_discrete(label = c("Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Diputado Hombre", "Diputada Mujer", "Gerente Hombre", "Gerente Mujer"))
 
 p12_sal_ideal_h
 ```
@@ -337,11 +329,11 @@ p12_sal_ideal_h
 p12_sal_ideal_m <- salario_ideal_long %>% filter(sexo=="Mujer") %>% 
   ggplot(aes(x = oficio, y = mean)) +
   geom_point(size=4) +
-  xlab("Oficio") + ylab("Salario ideal")  +
+  xlab("Oficio") + ylab("Salario justo")  +
   theme_bw() +
   ylim(0, 9000000) +
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-  scale_x_discrete(label = c("Salario propio", "Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Gerente Hombre", "Gerente Mujer", "Diputado Hombre", "Diputada Mujer"))
+  scale_x_discrete(label = c("Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Diputado Hombre", "Diputada Mujer", "Gerente Hombre", "Gerente Mujer"))
 
 p12_sal_ideal_m
 ```
@@ -350,8 +342,8 @@ p12_sal_ideal_m
 median_salarios_hombres <- ggarrange(p12_sal_real_h, p12_sal_ideal_h, ncol = 2)
 median_salarios_mujeres <- ggarrange(p12_sal_real_m, p12_sal_ideal_m, ncol = 2)
 
-ggsave(median_salarios_hombres, file = "output/graphs/median_salarios_hombres.png", width = 8,height = 10)
-ggsave(median_salarios_mujeres, file = "output/graphs/median_salarios_mujeres.png", width = 8,height = 10)
+ggsave(median_salarios_hombres, file = "output/graphs/des_median_salarios_hombres.png", width = 8,height = 10)
+ggsave(median_salarios_mujeres, file = "output/graphs/des_median_salarios_mujeres.png", width = 8,height = 10)
 ```
 
 ### Comparacion ambos tipos de salarios
@@ -403,6 +395,38 @@ base_long <- base %>%
                         "salario_real"),
                names_to = "tipo",
                values_to = "mean")
+base_long$tipo <- factor(base_long$tipo, levels = c("salario_real", "salario_ideal"))
+base_long$tipo <- factor(base_long$tipo, labels = c("Salario percibido", "Salario justo"))
+```
+
+```{r}
+plot_percibido <- base_long %>% filter(tipo=="Salario percibido") %>% 
+  ggplot(aes(x = oficio, y = mean, color=sexo)) + 
+  geom_point(size=4, aes(shape=sexo)) +
+  labs(color = "Sexo", shape="Sexo") +
+  xlab("Oficio") + ylab("Salario percibido")  +
+  theme_bw() +
+  theme(axis.text = element_text(angle = 45, hjust = 1),
+        strip.text.x = element_text(size = 14)) +
+  scale_x_discrete(label = c("Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Diputado Hombre", "Diputada Mujer", "Gerente Hombre", "Gerente Mujer"))
+
+plot_percibido
+ggsave(plot_percibido, file = "output/graphs/des_median_salarios_real.png", width = 12,height = 7)
+```
+
+```{r}
+plot_justo <- base_long %>% filter(tipo=="Salario justo") %>% 
+  ggplot(aes(x = oficio, y = mean, color=sexo)) + 
+  geom_point(size=4, aes(shape=sexo)) +
+  labs(color = "Sexo", shape="Sexo") +
+  xlab("Oficio") + ylab("Salario justo")  +
+  theme_bw() +
+  theme(axis.text = element_text(angle = 45, hjust = 1),
+        strip.text.x = element_text(size = 14)) +
+  scale_x_discrete(label = c("Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Diputado Hombre", "Diputada Mujer", "Gerente Hombre", "Gerente Mujer"))
+
+plot_justo
+ggsave(plot_justo, file = "output/graphs/des_median_salarios_ideal.png", width = 12,height = 7)
 ```
 
 ```{r}
@@ -411,12 +435,13 @@ plot_tipo <- ggplot(base_long, aes(x = oficio, y = mean, color=sexo)) +
   labs(color = "Sexo", shape="Sexo") +
   xlab("Oficio") + ylab("Salario")  +
   theme_bw() +
-  theme(axis.text = element_text(angle = 45, hjust = 1)) +
+  theme(axis.text = element_text(angle = 45, hjust = 1),
+        strip.text.x = element_text(size = 14)) +
   facet_wrap(~tipo) +
-  scale_x_discrete(label = c("Salario propio", "Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Gerente Hombre", "Gerente Mujer", "Diputado Hombre", "Diputada Mujer"))
+  scale_x_discrete(label = c("Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Diputado Hombre", "Diputada Mujer", "Gerente Hombre", "Gerente Mujer"))
 
 plot_tipo
-ggsave(plot_tipo, file = "output/graphs/dif_salarios_ambos.png", width = 12,height = 7)
+ggsave(plot_tipo, file = "output/graphs/des_dif_salarios_ambos.png", width = 12,height = 7)
 ```
 
 # salario real (mediana de percepción cuánto ganan en cada oficio diferenciado por sexo, según educacion)
@@ -431,8 +456,7 @@ salario_real = desiguales_pond %>% group_by(educacion_rec) %>%
             doctor_hombre = survey_median(p12_sal_real_doctor_h, na.rm = T),
             doctor_mujer = survey_median(p12_sal_real_doctor_m, na.rm = T),
             diputado_hombre = survey_median(p12_sal_real_diput_h, na.rm = T),
-            diputado_mujer = survey_median(p12_sal_real_diput_m, na.rm = T),
-            propio = survey_median(p91_monto, na.rm=T)
+            diputado_mujer = survey_median(p12_sal_real_diput_m, na.rm = T)
             )
 ```
 
@@ -445,12 +469,11 @@ salario_real_long <- salario_real %>%
                         "doctor_hombre", 
                         "doctor_mujer", 
                         "diputado_hombre", 
-                        "diputado_mujer",
-                        "propio"), 
+                        "diputado_mujer"), 
                names_to = "oficio",
                values_to = "mean")
 
-salario_real_long$oficio <- factor(salario_real_long$oficio, levels = c("propio", "cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "gerente_hombre", "gerente_mujer", "diputado_hombre", "diputado_mujer"))
+salario_real_long$oficio <- factor(salario_real_long$oficio, levels = c("cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "diputado_hombre", "diputado_mujer", "gerente_hombre", "gerente_mujer"))
 ```
 
 # salario ideal (Mediana de percepción cuánto deberían ganar en cada oficio diferenciado por sexo, según educacion)
@@ -465,8 +488,7 @@ salario_ideal = desiguales_pond %>% group_by(educacion_rec) %>%
             doctor_hombre = survey_median(p12_sal_ideal_doctor_h, na.rm = T),
             doctor_mujer = survey_median(p12_sal_ideal_doctor_m, na.rm = T),
             diputado_hombre = survey_median(p12_sal_ideal_diput_h, na.rm = T),
-            diputado_mujer = survey_median(p12_sal_ideal_diput_m, na.rm = T),
-            propio = survey_median(p75_monto, na.rm=T) 
+            diputado_mujer = survey_median(p12_sal_ideal_diput_m, na.rm = T) 
             )
 ```
 
@@ -479,12 +501,11 @@ salario_ideal_long <- salario_ideal %>%
                         "doctor_hombre", 
                         "doctor_mujer", 
                         "diputado_hombre", 
-                        "diputado_mujer",
-                        "propio"), 
+                        "diputado_mujer"), 
                names_to = "oficio",
                values_to = "mean")
 
-salario_ideal_long$oficio <- factor(salario_ideal_long$oficio, levels = c("propio", "cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "gerente_hombre", "gerente_mujer", "diputado_hombre", "diputado_mujer"))
+salario_ideal_long$oficio <- factor(salario_ideal_long$oficio, levels = c("cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "diputado_hombre", "diputado_mujer", "gerente_hombre", "gerente_mujer"))
 ```
 
 ```{r}
@@ -498,12 +519,13 @@ base_long <- base %>%
                         "salario_real"),
                names_to = "tipo",
                values_to = "mean")
+base_long$tipo <- factor(base_long$tipo, levels = c("salario_real", "salario_ideal"))
+base_long$tipo <- factor(base_long$tipo, labels = c("Salario percibido", "Salario justo"))
 ```
 
 ```{r}
 base_long$educacion_rec <- factor(base_long$educacion_rec, labels = c("No universitario", "Universitario"))
 base_long$educacion_rec <- factor(base_long$educacion_rec, levels = c("Universitario", "No universitario"))
-base_long$tipo <- factor(base_long$tipo, labels = c("Salario ideal", "Salario percibido"))
 
 plot_educ <- base_long %>% filter(!is.na(base_long$educacion_rec)) %>% 
   ggplot(aes(x = oficio, y = mean, color=educacion_rec)) + 
@@ -511,20 +533,21 @@ plot_educ <- base_long %>% filter(!is.na(base_long$educacion_rec)) %>%
   labs(color = "educacion_rec", shape="educacion_rec") +
   xlab("Oficio") + ylab("Salario")  +
   theme_bw() +
-  theme(axis.text = element_text(angle = 45, hjust = 1)) +
+  theme(axis.text = element_text(angle = 45, hjust = 1),
+        strip.text.x = element_text(size = 14)) +
   facet_wrap(~tipo) +
-  scale_x_discrete(label = c("Salario propio", "Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Gerente Hombre", "Gerente Mujer", "Diputado Hombre", "Diputada Mujer")) +
-    scale_color_discrete(labels = c("Educación 
+  scale_x_discrete(label = c("Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Diputado Hombre", "Diputada Mujer", "Gerente Hombre", "Gerente Mujer")) +
+  scale_color_discrete(labels = c("Educación 
 universitaria", "Educación
 no universitaria"))+
   guides(color=guide_legend(title="Nivel educacional"),
          shape=guide_legend(title="Nivel educacional"))+
-    scale_shape_discrete(labels = c("Educación 
+  scale_shape_discrete(labels = c("Educación 
 universitaria", "Educación
 no universitaria"))
 
 plot_educ
-ggsave(plot_tipo, file = "output/graphs/dif_salarios_ambos_educ.png", width = 12,height = 7)
+ggsave(plot_educ, file = "output/graphs/des_dif_salarios_ambos_educ.png", width = 12,height = 7)
 ```
 
 # salario real (mediana de percepción cuánto ganan en cada oficio diferenciado por sexo, según educacion y sexo)
@@ -540,8 +563,7 @@ salario_real = desiguales_pond %>% filter(!is.na(educacion_rec)) %>%
             doctor_hombre = survey_median(p12_sal_real_doctor_h, na.rm = T),
             doctor_mujer = survey_median(p12_sal_real_doctor_m, na.rm = T),
             diputado_hombre = survey_median(p12_sal_real_diput_h, na.rm = T),
-            diputado_mujer = survey_median(p12_sal_real_diput_m, na.rm = T),
-            propio = survey_median(p91_monto, na.rm=T)
+            diputado_mujer = survey_median(p12_sal_real_diput_m, na.rm = T)
             )
 ```
 
@@ -554,12 +576,11 @@ salario_real_long <- salario_real %>%
                         "doctor_hombre", 
                         "doctor_mujer", 
                         "diputado_hombre", 
-                        "diputado_mujer",
-                        "propio"), 
+                        "diputado_mujer"), 
                names_to = "oficio",
                values_to = "mean")
 
-salario_real_long$oficio <- factor(salario_real_long$oficio, levels = c("propio", "cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "gerente_hombre", "gerente_mujer", "diputado_hombre", "diputado_mujer"))
+salario_real_long$oficio <- factor(salario_real_long$oficio, levels = c("cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "diputado_hombre", "diputado_mujer", "gerente_hombre", "gerente_mujer"))
 ```
 
 # salario ideal (Mediana de percepción cuánto deberían ganar en cada oficio diferenciado por sexo, según educacion y sexo)
@@ -575,8 +596,7 @@ salario_ideal = desiguales_pond %>% filter(!is.na(educacion_rec)) %>%
             doctor_hombre = survey_median(p12_sal_ideal_doctor_h, na.rm = T),
             doctor_mujer = survey_median(p12_sal_ideal_doctor_m, na.rm = T),
             diputado_hombre = survey_median(p12_sal_ideal_diput_h, na.rm = T),
-            diputado_mujer = survey_median(p12_sal_ideal_diput_m, na.rm = T),
-            propio = survey_median(p75_monto, na.rm=T) 
+            diputado_mujer = survey_median(p12_sal_ideal_diput_m, na.rm = T) 
             )
 ```
 
@@ -589,12 +609,11 @@ salario_ideal_long <- salario_ideal %>%
                         "doctor_hombre", 
                         "doctor_mujer", 
                         "diputado_hombre", 
-                        "diputado_mujer",
-                        "propio"), 
+                        "diputado_mujer"), 
                names_to = "oficio",
                values_to = "mean")
 
-salario_ideal_long$oficio <- factor(salario_ideal_long$oficio, levels = c("propio", "cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "gerente_hombre", "gerente_mujer", "diputado_hombre", "diputado_mujer"))
+salario_ideal_long$oficio <- factor(salario_ideal_long$oficio, levels = c("cajero_hombre", "cajero_mujer", "doctor_hombre", "doctor_mujer", "diputado_hombre", "diputado_mujer", "gerente_hombre", "gerente_mujer"))
 ```
 
 ```{r}
@@ -608,14 +627,14 @@ base_long <- base %>%
                         "salario_real"),
                names_to = "tipo",
                values_to = "mean")
+base_long$tipo <- factor(base_long$tipo, levels = c("salario_real", "salario_ideal"))
+base_long$tipo <- factor(base_long$tipo, labels = c("Salario percibido", "Salario justo"))
 ```
 
 * salario real
 
 ```{r}
 base_long$educacion_rec <- factor(base_long$educacion_rec, labels = c("No universitario", "Universitario"))
-base_long$educacion_rec <- factor(base_long$educacion_rec, levels = c("Universitario", "No universitario"))
-base_long$tipo <- factor(base_long$tipo, labels = c("Salario ideal", "Salario percibido"))
 
 plot_real_educ_sexo <- base_long %>% filter(tipo=="Salario percibido") %>% 
   ggplot(aes(x = oficio, y = mean, color=sexo)) + 
@@ -623,26 +642,28 @@ plot_real_educ_sexo <- base_long %>% filter(tipo=="Salario percibido") %>%
   labs(color = "sexo", shape="sexo") +
   xlab("Oficio") + ylab("Salario")  +
   theme_bw() +
-  theme(axis.text = element_text(angle = 45, hjust = 1)) +
+  theme(axis.text = element_text(angle = 45, hjust = 1),
+        strip.text.x = element_text(size = 14)) +
   facet_wrap(~educacion_rec) +
-  scale_x_discrete(label = c("Salario propio", "Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Gerente Hombre", "Gerente Mujer", "Diputado Hombre", "Diputada Mujer"))
+  scale_x_discrete(label = c("Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Diputado Hombre", "Diputada Mujer", "Gerente Hombre", "Gerente Mujer"))
 
 plot_real_educ_sexo
-ggsave(plot_real_educ_sexo, file = "output/graphs/dif_salarios_real_educ_sexo.png", width = 12,height = 7)
+ggsave(plot_real_educ_sexo, file = "output/graphs/des_dif_salarios_real_educ_sexo.png", width = 12,height = 7)
 ```
 
 * salario ideal
 ```{r}
-plot_ideal_educ_sexo <- base_long %>% filter(tipo=="Salario ideal") %>% 
+plot_ideal_educ_sexo <- base_long %>% filter(tipo=="Salario justo") %>% 
   ggplot(aes(x = oficio, y = mean, color=sexo)) + 
   geom_point(size=4, aes(shape=sexo)) +
   labs(color = "sexo", shape="sexo") +
   xlab("Oficio") + ylab("Salario")  +
   theme_bw() +
-  theme(axis.text = element_text(angle = 45, hjust = 1)) +
+  theme(axis.text = element_text(angle = 45, hjust = 1),
+        strip.text.x = element_text(size = 14)) +
   facet_wrap(~educacion_rec) +
-  scale_x_discrete(label = c("Salario propio", "Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Gerente Hombre", "Gerente Mujer", "Diputado Hombre", "Diputada Mujer"))
+  scale_x_discrete(label = c("Cajero Hombre", "Cajera Mujer", "Doctor Hombre", "Doctora Mujer", "Diputado Hombre", "Diputada Mujer", "Gerente Hombre", "Gerente Mujer"))
 
 plot_ideal_educ_sexo
-ggsave(plot_ideal_educ_sexo, file = "output/graphs/dif_salarios_ideal_educ_sexo.png", width = 12,height = 7)
+ggsave(plot_ideal_educ_sexo, file = "output/graphs/des_dif_salarios_ideal_educ_sexo.png", width = 12,height = 7)
 ```
