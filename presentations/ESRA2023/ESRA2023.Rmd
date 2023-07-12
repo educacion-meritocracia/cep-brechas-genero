@@ -1,0 +1,182 @@
+---
+title: "Perceived salary and gender gaps in survey research"
+subtitle: ""
+author: "Juan Carlos Castillo, Kevin Carrasco & Julio Iturra"
+institute: ".small[**FONDECYT N°1210847 Meritocracia en la Escuela**]"
+output:
+  xaringan::moon_reader:
+    css: ["custom_lisa.css"]
+    seal: false
+    nature:
+      highlightStyle: solarized-dark
+      highlightLines: true
+      countIncrementalSlides: false
+      beforeInit: "macros.js"
+      ratio: '16:9'
+---
+
+class: middle title-slide
+
+```{r xaringanExtra, echo = FALSE}
+  xaringanExtra::use_progress_bar(color = "red", location = c("top"))
+```
+
+
+```{r xaringan-tile-view, echo=FALSE}
+xaringanExtra::use_tile_view()
+```
+
+
+
+.pull-left-narrow[
+.content-box-gray[
+![:scale 60%](https://www.europeansurveyresearch.org/wp-content/uploads/2022/10/ESRA-full-sentence-white-png.png)
+]]
+
+
+.pull-right-wide[
+.right[
+## Perceived salary and gender gaps in survey research
+
+
+----
+
+
+
+.medium[
+<div style="line-height:150%;">
+Juan Carlos Castillo *
+<br> Kevin Carrasco & Julio Iturra <br>
+</div>
+
+]
+<br>
+.small[
+<div style="line-height:150%;">
+*Department of Sociology, Universidad de Chile
+</div>
+[juancastillov@uchile.cl](juancastillov@uchile.cl) - [jc-castillo.com](https://jc-castillo.com)
+
+]
+]
+]
+
+---
+
+team
+
+---
+class: roja bottom
+
+# Context & motivation
+
+---
+class: middle center
+![:scale 50%](https://cdn.statcdn.com/Infographic/images/normal/13182.jpeg)
+
+---
+class: inverse middle center
+
+## _To what extent pay gaps are .red[perceived] and .red[justified] by gender?_
+
+---
+# Approaches
+
+1. Differences between men and women in the perception and justification of salaries (in general)
+
+2. Differences between men and women in the perception and justification of salaries .red[for men and women]
+
+---
+
+
+[diagrama]
+
+
+---
+class: roja bottom right
+
+# Study 1: 
+## Perceived and Justifyed salary gaps by gender
+## ISSP Chile 1999,2009 & 2019
+
+---
+# Data
+
+
+
+---
+class: middle
+
+.pull-left[
+### Perceived gap
+![](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/cleveland2019_percibida.png)]
+
+.pull-right[
+### Just gap
+![](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/cleveland2019_justa.png)]
+
+
+---
+class: middle center
+
+.pull-left-narrow[
+### Perceived salaries
+]
+.pull-right-wide[
+![](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/issp_percibido_exp.png)]
+---
+class: middle center
+![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/issp_justo_exp.png)
+
+---
+class: middle center
+
+![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/gerente_obrero_exp.png)
+
+---
+class: middle center
+
+![:scale 100%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/gerente_obrero_educ_exp.png)
+
+---
+
+class: middle center
+
+![:scale 100%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/tables/reg_brechas.png)
+
+
+---
+class: roja bottom right
+
+# Study 2: 
+## Perceived and Justifyed gender salary gaps by gender
+## Desiguales survey Chile 2017
+
+---
+# Data
+
+---
+class: middle center
+
+![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/median_salarios_real.png)
+---
+class: middle center
+
+![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/median_salarios_ideal.png)
+
+---
+class: middle center
+
+![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/dif_salarios_ambos_educ.png)
+
+
+---
+class: middle center
+
+![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/dif_salarios_real_educ_sexo.png)
+
+
+---
+class: middle center
+
+![:scale 80%](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/dif_salarios_ideal_educ_sexo.png)
