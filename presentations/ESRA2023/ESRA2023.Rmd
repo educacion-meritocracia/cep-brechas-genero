@@ -94,32 +94,44 @@ class: middle center
 ![:scale 50%](https://cdn.statcdn.com/Infographic/images/normal/13182.jpeg)
 
 ???
-- we are all aware of the existence and persitence of gender pay gaps
+1- we are all aware of the existence and persistence of gender pay gaps
 
-- this is a worldwide phenomenon with large variance between countries, but that in OECD average is about 12 percent
+2- this is a worldwide phenomenon with large variance between countries, but that in OECD average is about 12 percent
 
-- most of the research in this area is related to sociostructural factors, but we know little about the extent to which this problem is 1) perceived by the population, 2) if this is something considered unjust or not. 
+3- most of the research in this area is related to sociostructural factors, but we know little about the extent to which this problem is 1) perceived by the population, 2) if this is something considered unjust or not. 
 
-- awareness of the problem, specially from the side of women, is relevant given that if this situation is misperceived it is difficult to expect political agency to modify this situation
+4- awareness of this problem, specially from the side of women is relevant given that if this situation is misperceived it is difficult to expect reduction of the gender pay gap
 
 ---
+class: middle
+
+.pull-left-narrow[
+
 ## Recent research
 
-----
+]
 
---
+
+.pull-right-wide[
+
 - Auspurg, Hinz & Sauer (2017), vignette experiment, supports rewards expectation theory: men and women consider just lower pay for women
 
 - Sauer (2020): gender payment evaluation bias in general population but not in university students 
-
+]
 ---
-## This research
+class: middle
+.pull-left-narrow[
+## This research]
+
+.pull-right-wide[
+.content-box-red[
 - _To what extent gender pay gaps are .red[perceived] and .red[justified]?_
 
-- rewards expectation hypothesis: men and women justify lower salaries for women
+- Rewards expectation hypothesis: men and women justify lower salaries for women
 
-- perceptual bias hypothesis: women misperceive gender pay gaps 
-
+- Perceptual bias/same group comparison hypothesis: women perceive and justify lower salaries, particularly for women
+]
+]
 ---
 .pull-left-narrow[## Methodological approaches]
 
@@ -136,7 +148,7 @@ class: middle center
 .pull-right-wide[
 ### - .black[Questions about perceived and just salaries for different occupations] (ISSP)
 
-### - Salary gaps: .black[ratios between salaries of high and low occupations ] 
+### - Salary gaps: .black[ratios between salaries of high and low status occupations ] 
 ]
 ---
 class: roja bottom right
@@ -163,18 +175,6 @@ class: center
 ![](images/questions_just_issp.png)
 
 ---
-class: middle
-
-.pull-left[
-### Perceived gap
-![](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/cleveland2019_percibida.png)]
-
-.pull-right[
-### Just gap
-![](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/cleveland2019_justa.png)]
-
-
----
 class: middle 
 
 .pull-left-narrow[
@@ -194,6 +194,16 @@ class: middle
 
 ![](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/issp_justo_exp.png)]
 
+---
+class: middle
+
+.pull-left[
+### Perceived gap
+![](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/cleveland2019_percibida.png)]
+
+.pull-right[
+### Just gap
+![](https://raw.githubusercontent.com/justicia-distributiva/cep-brechas-genero/main/output/graphs/cleveland2019_justa.png)]
 ---
 class: middle
 
@@ -266,11 +276,11 @@ class: roja
 
 - perceived and just gaps by gender: women perceive and justify lower salaries and gaps (same-gender referent theory?)
 
-- no evidence for the gender of the occupation 
+- no evidence so far for the gender of the occupation  
 
 - limitation: fixed blocks for occupational gender in study 2; pay gaps not possible
 
-- further research: longitudinal survey altering the gender of the occupations 
+- further research: longitudinal survey alternating the gender of the occupations 
   - ![:scale 3%](https://avatars.githubusercontent.com/u/3344584?s=280&v=4) OSF-preregistration [.yellow[osf.io/9aewg]](https://)
 
 
