@@ -34,6 +34,8 @@ data_1999 <- read_sav("input/original/ISSP1999.sav")
 chile_1999 <- data_1999 %>% filter(V3==30) %>% select(WEIGHT,
                                                       educacion=DEGREE,
                                                       sex=SEX,
+                                                      age=AGE,
+                                                      region=X_REG,
                                                       V15, #doctor
                                                       V16, #gerente
                                                       V18, #asistente tienda,
@@ -55,7 +57,7 @@ summary(chile_1999$V21)
 chile_1999 <- chile_1999 %>% set_na(., na = c(99999999999, 99999999998), drop.levels = FALSE, as.tag = FALSE) %>% as.data.frame()
 summary(chile_1999$V21)
 
-chile_1999 <- set_label(chile_1999, c("WEIGHT", "Educacion", "Sexo", "Percibido: Doctor", "Percibido: Gerente", "Percibido: Asistente de tienda", "Percibido: Obrero", "Percibido: Ministro de Gobierno", "Justo: Doctor", "Justo: Gerente", "Justo: Asistente de tienda", "Justo: Obrero", "Justo: Ministro de Gobierno"))
+chile_1999 <- set_label(chile_1999, c("WEIGHT", "Educacion", "Sexo", "Edad", "Region", "Percibido: Doctor", "Percibido: Gerente", "Percibido: Asistente de tienda", "Percibido: Obrero", "Percibido: Ministro de Gobierno", "Justo: Doctor", "Justo: Gerente", "Justo: Asistente de tienda", "Justo: Obrero", "Justo: Ministro de Gobierno"))
 ```
 
 * Educacion
@@ -220,6 +222,8 @@ data_2009 <- read_dta("input/original/ISSP2009.dta")
 chile_2009 <- data_2009 %>% filter(V5==152) %>% dplyr::select(WEIGHT,
                                                               educacion=CL_DEGR,
                                                               sex=SEX,
+                                                              age=AGE,
+                                                              region= CL_REG,
                                                               V22, #doctor
                                                               V23, #gerente
                                                               V24, #asistente tienda
@@ -240,7 +244,7 @@ summary(chile_2009$V23) # original
 chile_2009 <- chile_2009 %>% set_na(., na = c(-99, -98, -97), drop.levels = FALSE, as.tag = FALSE)
 summary(chile_2009$V23)
 
-chile_2009 <- set_label(chile_2009, c("WEIGHT", "Educacion", "Sexo", "Percibido: Doctor", "Percibido: Gerente", "Percibido: Asistente de tienda", "Percibido: Obrero", "Percibido: Ministro de Gobierno", "Justo: Doctor", "Justo: Gerente", "Justo: Asistente de tienda", "Justo: Obrero", "Justo: Ministro de Gobierno"))
+chile_2009 <- set_label(chile_2009, c("WEIGHT", "Educacion", "Sexo", "Edad", "Region", "Percibido: Doctor", "Percibido: Gerente", "Percibido: Asistente de tienda", "Percibido: Obrero", "Percibido: Ministro de Gobierno", "Justo: Doctor", "Justo: Gerente", "Justo: Asistente de tienda", "Justo: Obrero", "Justo: Ministro de Gobierno"))
 ```
 
 * Educacion
@@ -346,6 +350,8 @@ data_2019 <- read_dta("input/original/ISSP2019.dta")
 chile_2019 <- data_2019 %>% filter(country==152) %>% dplyr::select(WEIGHT,
                                                                    educacion=CL_DEGR,
                                                                    sex=SEX,
+                                                                   age= AGE,
+                                                                   region= CL_REG,
                                                                    v11, #doctor
                                                                    v12, # gerente
                                                                    v13, #asistente tienda
@@ -372,8 +378,6 @@ chile_2019 <- set_label(chile_2019, c("WEIGHT", "Educacion", "Sexo", "Percibido:
 * Educacion
 
 ```{r}
-table(chile_2019$educacion_rec)
-
 chile_2019 <- chile_2019 %>% rowwise() %>%  mutate(educacion_rec = case_when(educacion==1~"Educación media incompleta",
                                                  educacion==2~"Educación media incompleta",
                                                  educacion==3~"Educación media incompleta",

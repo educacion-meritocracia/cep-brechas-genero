@@ -1,0 +1,25 @@
+﻿Variable;Tipo;1999;2009;2019
+Sexo;Hombre;657;629;513
+Sexo;Mujer;846;876;861
+Edad;Mínimo;18;18;18
+Edad;Media;44;47;50
+Edad;Máximo;94;91;96
+Educación;Media incompleta;858;716;553
+Educación;Media completa;547;450;487
+Educación;Universitaria;81;331;323
+Región de Arica y Parinacota;Cantidad;-;-;14
+Región de Tarapacá;Cantidad;40;40;24
+Región de Antofagasta;Cantidad;44;50;46
+Región de Atacama;Cantidad;30;25;18
+Región de Coquimbo;Cantidad;55;60;60
+Región de Valparaíso;Cantidad;155;155;148
+Región Metropolitana;Cantidad;610;610;562
+Región de O'higgins;Cantidad;80;75;66
+Región del Maule;Cantidad;89;90;78
+Región de Ñuble;Cantidad;-;-;33
+Región del Biobio;Cantidad;185;185;128
+Región de la Araucanía;Cantidad;85;85;80
+Región de los Ríos;Cantidad;-;-;38
+Región de los Lagos;Cantidad;105;105;58
+Región de Aysén;Cantidad;10;10;7
+Región de Magallanes;Cantidad;15;15;14

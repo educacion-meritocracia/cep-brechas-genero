@@ -472,6 +472,22 @@ webshot::webshot(url ="output/tables/desc99.html" ,file ="output/tables/desc99.p
 
 ### Descriptivos
 
+muestra
+```{r echo=FALSE}
+tab0 <- read.csv(file = "input/table-muestra.csv",header = 1,sep = ";",encoding = "UTF-8")
+
+tab0 %>% 
+knitr::kable("html", booktabs = T, linesep = "",col.names =  c("Variable", "Tipo", "1999",  "2009", "2019")) %>%
+    kable_styling(bootstrap_options=c("striped", "hover", "condensed", "bordered"), full_width = F, font_size=14, position = "center", html_font = "Times new roman") %>% 
+  column_spec(column = 1,width = "15em", bold = TRUE) %>%
+  column_spec(column = 2,width = "10em") %>%
+  column_spec(column = 3,width = "3em") %>%
+  column_spec(column = 4,width = "3em") %>%
+  column_spec(column = 5,width = "3em") %>%
+  collapse_rows(columns = 1) %>% 
+  save_kable("output/tables/descriptivos_muestra.png", density=1000)
+```
+
 Salarios y brecha percibidos
 ```{r echo=FALSE}
 tab1 <- read.csv(file = "input/table1.csv",header = 1,sep = ";",encoding = "UTF-8")
@@ -512,7 +528,7 @@ Salarios ipc y brecha percibidos
 ```{r echo=FALSE}
 tab1_ipc <- read.csv(file = "input/table1-ipc.csv",header = 1,sep = ";",encoding = "UTF-8")
 
-tab1_ipc %>% filter(Variable!= "Brecha salarial percibida") %>% 
+tab1_ipc %>% 
 knitr::kable("html", booktabs = T, linesep = "",col.names =  c("Variable", "Año", "Mediana", "Mediana ajustada", "Casos válidos")) %>%
     kable_styling(bootstrap_options=c("striped", "hover", "condensed", "bordered"), full_width = F, font_size=14, position = "center", html_font = "Times new roman") %>% 
   column_spec(column = 1,width = "10em", bold = TRUE) %>%
@@ -528,8 +544,7 @@ salarios ipc y brecha justificadas
 ```{r echo=FALSE}
 tab2_ipc <- read.csv(file = "input/table2-ipc.csv",header = 1,sep = ";",encoding = "UTF-8")
 
-
-tab2_ipc %>% filter(Variable!= "Brecha salarial justa") %>%  
+tab2_ipc %>%  
 knitr::kable("html", booktabs = T, linesep = "",col.names =  c("Variable", "Año", "Mediana", "Mediana ajustada", "Casos válidos")) %>%
     kable_styling(bootstrap_options=c("striped", "hover", "condensed", "bordered"), full_width = F, font_size=14, position = "center", html_font = "Times new roman") %>% 
   column_spec(column = 1,width = "10em", bold = TRUE) %>%
@@ -590,14 +605,38 @@ data_2019 <- chile_2019_exp %>% group_by(sexo) %>%
 
 ```{r}
 perc_1999 <- data_1999 %>% 
-  pivot_longer(cols = c("perc_doctor", 
-                        "perc_gerente", 
-                        "perc_tienda", 
-                        "perc_obrero", 
+  pivot_longer(cols = c("perc_doctor",
+                        "perc_gerente",
+                        "perc_tienda",
+                        "perc_obrero",
                         "perc_ministro"),
                names_to = "oficio",
-               values_to = "salario") %>% 
+               values_to = "salario")%>% 
   select(sexo, year, oficio, salario)
+
+perc_1999_low <- data_1999 %>% 
+  pivot_longer(cols = c("perc_doctor_low",
+                        "perc_gerente_low",
+                        "perc_tienda_low", 
+                        "perc_obrero_low",
+                        "perc_ministro_low"),
+               names_to = "oficio_low",
+               values_to = "salario_low")%>% 
+  select(oficio_low, salario_low)
+
+perc_1999_upp <- data_1999 %>% 
+  pivot_longer(cols = c("perc_doctor_upp",
+                        "perc_gerente_upp",
+                        "perc_tienda_upp",
+                        "perc_obrero_upp",
+                        "perc_ministro_upp"),
+               names_to = "oficio_upp",
+               values_to = "salario_upp")%>% 
+  select(oficio_upp, salario_upp)
+
+perc_1999 <- cbind(perc_1999, perc_1999_low, perc_1999_upp)
+
+
 
 perc_2009 <- data_2009 %>% 
   pivot_longer(cols = c("perc_doctor", 
@@ -609,6 +648,29 @@ perc_2009 <- data_2009 %>%
                values_to = "salario") %>% 
   select(sexo, year, oficio, salario)
 
+perc_2009_low <- data_2009 %>% 
+  pivot_longer(cols = c("perc_doctor_low",
+                        "perc_gerente_low",
+                        "perc_tienda_low", 
+                        "perc_obrero_low",
+                        "perc_ministro_low"),
+               names_to = "oficio_low",
+               values_to = "salario_low")%>% 
+  select(oficio_low, salario_low)
+
+perc_2009_upp <- data_2009 %>% 
+  pivot_longer(cols = c("perc_doctor_upp",
+                        "perc_gerente_upp",
+                        "perc_tienda_upp",
+                        "perc_obrero_upp",
+                        "perc_ministro_upp"),
+               names_to = "oficio_upp",
+               values_to = "salario_upp")%>% 
+  select(oficio_upp, salario_upp)
+
+perc_2009 <- cbind(perc_2009, perc_2009_low, perc_2009_upp)
+
+
 perc_2019 <- data_2019 %>% 
   pivot_longer(cols = c("perc_doctor", 
                         "perc_gerente", 
@@ -618,6 +680,28 @@ perc_2019 <- data_2019 %>%
                names_to = "oficio",
                values_to = "salario") %>% 
   select(sexo, year, oficio, salario)
+
+perc_2019_low <- data_2019 %>% 
+  pivot_longer(cols = c("perc_doctor_low",
+                        "perc_gerente_low",
+                        "perc_tienda_low", 
+                        "perc_obrero_low",
+                        "perc_ministro_low"),
+               names_to = "oficio_low",
+               values_to = "salario_low")%>% 
+  select(oficio_low, salario_low)
+
+perc_2019_upp <- data_2019 %>% 
+  pivot_longer(cols = c("perc_doctor_upp",
+                        "perc_gerente_upp",
+                        "perc_tienda_upp",
+                        "perc_obrero_upp",
+                        "perc_ministro_upp"),
+               names_to = "oficio_upp",
+               values_to = "salario_upp")%>% 
+  select(oficio_upp, salario_upp)
+
+perc_2019 <- cbind(perc_2019, perc_2019_low, perc_2019_upp)
 
 salario_percibido <- rbind(perc_1999, perc_2009, perc_2019)
 ```
@@ -631,7 +715,20 @@ salario_percibido$sexo <- factor(salario_percibido$sexo, levels = c("Mujer", "Ho
 plot_percibido <- salario_percibido %>%
   ggplot(aes(x=salario, y=oficio)) +
   theme_bw() +
-  geom_point(aes(color = sexo, shape = sexo), size = 3) +
+  geom_point(aes(color = sexo, shape = sexo), size = 3)+ 
+  xlab("salario percibido")+
+  ylab("Ocupación")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_continuous(limits = c(0, 10000000),
+                     breaks = seq(0, 10000000, by = 2000000)) +
+  facet_grid(~year)
+
+plot_percibido_ci <- salario_percibido %>%
+  ggplot(aes(x=salario, y=oficio)) +
+  theme_bw() +
+  geom_point(aes(color = sexo, shape = sexo), size = 3)+ 
+  geom_errorbar(aes(xmin=salario_low, xmax=salario_upp),
+                  width=0.2, position=position_dodge(.9)) +
   xlab("salario percibido")+
   ylab("Ocupación")+
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
@@ -640,20 +737,46 @@ plot_percibido <- salario_percibido %>%
   facet_grid(~year)
 
 plot_percibido
+plot_percibido_ci
 ggsave(plot_percibido, file="output/graphs/issp_percibido_exp.png", width = 10,height = 7)
+ggsave(plot_percibido_ci, file="output/graphs/issp_percibido_exp_ci.png", width = 10,height = 7)
 ```
 
 * Salario justo
 ```{r}
 just_1999 <- data_1999 %>% 
-  pivot_longer(cols = c("just_doctor", 
-                        "just_gerente", 
-                        "just_tienda", 
-                        "just_obrero", 
-                        "just_ministro"), 
+  pivot_longer(cols = c("just_doctor",
+                        "just_gerente",
+                        "just_tienda",
+                        "just_obrero",
+                        "just_ministro"),
                names_to = "oficio",
-               values_to = "salario") %>% 
+               values_to = "salario")%>% 
   select(sexo, year, oficio, salario)
+
+just_1999_low <- data_1999 %>% 
+  pivot_longer(cols = c("just_doctor_low",
+                        "just_gerente_low",
+                        "just_tienda_low", 
+                        "just_obrero_low",
+                        "just_ministro_low"),
+               names_to = "oficio_low",
+               values_to = "salario_low")%>% 
+  select(oficio_low, salario_low)
+
+just_1999_upp <- data_1999 %>% 
+  pivot_longer(cols = c("just_doctor_upp",
+                        "just_gerente_upp",
+                        "just_tienda_upp",
+                        "just_obrero_upp",
+                        "just_ministro_upp"),
+               names_to = "oficio_upp",
+               values_to = "salario_upp")%>% 
+  select(oficio_upp, salario_upp)
+
+just_1999 <- cbind(just_1999, just_1999_low, just_1999_upp)
+
+
 
 just_2009 <- data_2009 %>% 
   pivot_longer(cols = c("just_doctor", 
@@ -665,6 +788,29 @@ just_2009 <- data_2009 %>%
                values_to = "salario") %>% 
   select(sexo, year, oficio, salario)
 
+just_2009_low <- data_2009 %>% 
+  pivot_longer(cols = c("just_doctor_low",
+                        "just_gerente_low",
+                        "just_tienda_low", 
+                        "just_obrero_low",
+                        "just_ministro_low"),
+               names_to = "oficio_low",
+               values_to = "salario_low")%>% 
+  select(oficio_low, salario_low)
+
+just_2009_upp <- data_2009 %>% 
+  pivot_longer(cols = c("just_doctor_upp",
+                        "just_gerente_upp",
+                        "just_tienda_upp",
+                        "just_obrero_upp",
+                        "just_ministro_upp"),
+               names_to = "oficio_upp",
+               values_to = "salario_upp")%>% 
+  select(oficio_upp, salario_upp)
+
+just_2009 <- cbind(just_2009, just_2009_low, just_2009_upp)
+
+
 just_2019 <- data_2019 %>% 
   pivot_longer(cols = c("just_doctor", 
                         "just_gerente", 
@@ -674,6 +820,28 @@ just_2019 <- data_2019 %>%
                names_to = "oficio",
                values_to = "salario") %>% 
   select(sexo, year, oficio, salario)
+
+just_2019_low <- data_2019 %>% 
+  pivot_longer(cols = c("just_doctor_low",
+                        "just_gerente_low",
+                        "just_tienda_low", 
+                        "just_obrero_low",
+                        "just_ministro_low"),
+               names_to = "oficio_low",
+               values_to = "salario_low")%>% 
+  select(oficio_low, salario_low)
+
+just_2019_upp <- data_2019 %>% 
+  pivot_longer(cols = c("just_doctor_upp",
+                        "just_gerente_upp",
+                        "just_tienda_upp",
+                        "just_obrero_upp",
+                        "just_ministro_upp"),
+               names_to = "oficio_upp",
+               values_to = "salario_upp")%>% 
+  select(oficio_upp, salario_upp)
+
+just_2019 <- cbind(just_2019, just_2019_low, just_2019_upp)
 
 salario_justo <- rbind(just_1999, just_2009, just_2019)
 ```
@@ -694,34 +862,49 @@ plot_justo <- salario_justo %>%
                      breaks = seq(0, 6000000, by = 1500000)) +
   facet_grid(~year)
 
+plot_justo_ci <- salario_justo %>%
+  ggplot(aes(salario, oficio)) +
+  theme_bw() +
+  geom_point(aes(color = sexo, shape = sexo), size = 3) +
+  geom_errorbar(aes(xmin=salario_low, xmax=salario_upp),
+                  width=0.2, position=position_dodge(.9)) +
+  xlab("salario justo")+
+  ylab("Ocupación")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_continuous(limits = c(0, 6000000),
+                     breaks = seq(0, 6000000, by = 1500000)) +
+  facet_grid(~year)
+
 plot_justo
+plot_justo_ci
 ggsave(plot_justo, file="output/graphs/issp_justo_exp.png", width = 10,height = 7)
+ggsave(plot_justo_ci, file="output/graphs/issp_justo_exp_ci.png", width = 10,height = 7)
 ```
 
 ### Brechas gerente/obrero
 
 ```{r}
 brecha_1999 <- chile_1999_exp %>% group_by(sexo) %>%
-  summarise(brecha_perc_1999 = survey_median(brecha_perc_1999, na.rm = T),
-            brecha_just_1999 = survey_median(brecha_just_1999, na.rm = T)
+  summarise(brecha_perc_1999 = survey_median(brecha_perc_1999, vartype = "ci", na.rm = T),
+            brecha_just_1999 = survey_median(brecha_just_1999, vartype = "ci", na.rm = T)
             )
 
 brecha_2009 <- chile_2009_exp %>% group_by(sexo) %>%
-  summarise(brecha_perc_2009 = survey_median(brecha_perc_2009, na.rm = T),
-            brecha_just_2009 = survey_median(brecha_just_2009, na.rm = T)
+  summarise(brecha_perc_2009 = survey_median(brecha_perc_2009, vartype = "ci", na.rm = T),
+            brecha_just_2009 = survey_median(brecha_just_2009, vartype = "ci", na.rm = T)
             )
 
 brecha_2019 <- chile_2019_exp %>% group_by(sexo) %>%
-  summarise(brecha_perc_2019 = survey_median(brecha_perc_2019, na.rm = T),
-            brecha_just_2019 = survey_median(brecha_just_2019, na.rm = T)
+  summarise(brecha_perc_2019 = survey_median(brecha_perc_2019, vartype = "ci", na.rm = T),
+            brecha_just_2019 = survey_median(brecha_just_2019, vartype = "ci", na.rm = T)
             )
 ```
 
 ```{r}
-base <- merge(brecha_1999, brecha_2009, by="sexo")
-base <- merge(base, brecha_2019, by="sexo")
+brecha <- merge(brecha_1999, brecha_2009, by="sexo")
+brecha <- merge(brecha, brecha_2019, by="sexo")
 
-base <- base %>% 
+base <- brecha %>% 
   pivot_longer(cols = c("brecha_perc_1999", 
                         "brecha_just_1999", 
                         "brecha_perc_2009", 
@@ -729,7 +912,32 @@ base <- base %>%
                         "brecha_perc_2019", 
                         "brecha_just_2019"), 
                names_to = "year",
-               values_to = "mean")
+               values_to = "mean")%>% 
+  select(sexo, year, mean)
+
+base_low <- brecha %>% 
+  pivot_longer(cols = c("brecha_perc_1999_low", 
+                        "brecha_just_1999_low", 
+                        "brecha_perc_2009_low", 
+                        "brecha_just_2009_low", 
+                        "brecha_perc_2019_low", 
+                        "brecha_just_2019_low"), 
+               names_to = "year_low",
+               values_to = "mean_low")%>% 
+  select(year_low, mean_low)
+
+base_upp <- brecha %>% 
+  pivot_longer(cols = c("brecha_perc_1999_upp", 
+                        "brecha_just_1999_upp", 
+                        "brecha_perc_2009_upp", 
+                        "brecha_just_2009_upp", 
+                        "brecha_perc_2019_upp", 
+                        "brecha_just_2019_upp"), 
+               names_to = "year_upp",
+               values_to = "mean_upp")%>% 
+  select(year_upp, mean_upp)
+
+base <- cbind(base, base_low, base_upp)
 ```
 
 ```{r}
@@ -754,8 +962,25 @@ gerente_obrero <- ggplot(base, aes(x = year, y = mean, color=sexo)) +
                              "Percibida 2019",
                              "Justa 2019"))
 
+gerente_obrero_ci <- ggplot(base, aes(x = year, y = mean, color=sexo)) +
+  geom_point(size=4, aes(shape=sexo)) +
+  geom_errorbar(aes(ymin=mean_low, ymax=mean_upp),
+                  width=0.2, position=position_dodge(0)) +
+  labs(color = "Sexo", shape="Sexo") +
+  xlab("") + ylab("Brecha")  +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+  scale_x_discrete(label = c("Percibida 1999",
+                             "Justa 1999", 
+                             "Percibida 2009",  
+                             "Justa 2009", 
+                             "Percibida 2019",
+                             "Justa 2019"))
+
 gerente_obrero
+gerente_obrero_ci
 ggsave(gerente_obrero, file="output/graphs/gerente_obrero_exp.png", width = 10, height = 7)
+ggsave(gerente_obrero_ci, file="output/graphs/gerente_obrero_exp_ci.png", width = 10, height = 7)
 ```
 
 ### brechas log(gerente/obrero)
@@ -818,28 +1043,28 @@ ggsave(loggerente_obrero, file="output/graphs/loggerente_obrero_exp.png", width 
 ```{r}
 brecha_educ_1999 <- chile_1999_exp %>% filter(!is.na(educacion_rec)) %>% 
   group_by(sexo, educacion_rec) %>%
-  summarise(brecha_perc_1999 = survey_median(brecha_perc_1999, na.rm = T),
-            brecha_just_1999 = survey_median(brecha_just_1999, na.rm = T)
+  summarise(brecha_perc_1999 = survey_median(brecha_perc_1999, vartype = "ci", na.rm = T),
+            brecha_just_1999 = survey_median(brecha_just_1999, vartype = "ci", na.rm = T)
             )
 
 brecha_educ_2009 <- chile_2009_exp %>% filter(!is.na(educacion_rec)) %>% 
   group_by(sexo, educacion_rec) %>%
-  summarise(brecha_perc_2009 = survey_median(brecha_perc_2009, na.rm = T),
-            brecha_just_2009 = survey_median(brecha_just_2009, na.rm = T)
+  summarise(brecha_perc_2009 = survey_median(brecha_perc_2009, vartype = "ci", na.rm = T),
+            brecha_just_2009 = survey_median(brecha_just_2009, vartype = "ci", na.rm = T)
             )
 
 brecha_educ_2019 <- chile_2019_exp %>% filter(!is.na(educacion_rec)) %>% 
   group_by(sexo, educacion_rec) %>%
-  summarise(brecha_perc_2019 = survey_median(brecha_perc_2019, na.rm = T),
-            brecha_just_2019 = survey_median(brecha_just_2019, na.rm = T)
+  summarise(brecha_perc_2019 = survey_median(brecha_perc_2019, vartype = "ci", na.rm = T),
+            brecha_just_2019 = survey_median(brecha_just_2019, vartype = "ci", na.rm = T)
             )
 ```
 
 ```{r}
-base_educ <- merge(brecha_educ_1999, brecha_educ_2009, by=c("sexo", "educacion_rec"))
-base_educ <- merge(base_educ, brecha_educ_2019, by=c("sexo", "educacion_rec"))
+brecha_educ <- merge(brecha_educ_1999, brecha_educ_2009, by=c("sexo", "educacion_rec"))
+brecha_educ <- merge(brecha_educ, brecha_educ_2019, by=c("sexo", "educacion_rec"))
 
-base_educ <- base_educ %>% 
+base_educ <- brecha_educ %>% 
   pivot_longer(cols = c("brecha_perc_1999", 
                         "brecha_just_1999", 
                         "brecha_perc_2009", 
@@ -847,7 +1072,32 @@ base_educ <- base_educ %>%
                         "brecha_perc_2019", 
                         "brecha_just_2019"), 
                names_to = "year",
-               values_to = "mean")
+               values_to = "mean")%>% 
+  select(sexo, educacion_rec, year, mean)
+
+base_educ_low <- brecha_educ %>% 
+  pivot_longer(cols = c("brecha_perc_1999_low", 
+                        "brecha_just_1999_low", 
+                        "brecha_perc_2009_low", 
+                        "brecha_just_2009_low", 
+                        "brecha_perc_2019_low", 
+                        "brecha_just_2019_low"), 
+               names_to = "year_low",
+               values_to = "mean_low")%>% 
+  select(year_low, mean_low)
+
+base_educ_upp <- brecha_educ %>% 
+  pivot_longer(cols = c("brecha_perc_1999_upp", 
+                        "brecha_just_1999_upp", 
+                        "brecha_perc_2009_upp", 
+                        "brecha_just_2009_upp", 
+                        "brecha_perc_2019_upp", 
+                        "brecha_just_2019_upp"), 
+               names_to = "year_upp",
+               values_to = "mean_upp")%>% 
+  select(year_upp, mean_upp)
+
+base_educ <- cbind(base_educ, base_educ_low, base_educ_upp)
 ```
 
 ```{r}
@@ -873,8 +1123,26 @@ gerente_obrero_educ <- ggplot(base_educ, aes(x = year, y = mean, color=sexo)) +
                              "Justa 2019"))+
   facet_wrap(~educacion_rec)
 
+gerente_obrero_educ_ci <- ggplot(base_educ, aes(x = year, y = mean, color=sexo)) +
+  geom_point(size=4, aes(shape=sexo)) +
+  geom_errorbar(aes(ymin=mean_low, ymax=mean_upp),
+                  width=0.2, position=position_dodge(0)) +
+  labs(color = "Sexo", shape="Sexo") +
+  xlab("") + ylab("Brecha")  +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 50, hjust = 1)) +
+  scale_x_discrete(label = c("Percibida 1999",
+                             "Justa 1999", 
+                             "Percibida 2009",  
+                             "Justa 2009", 
+                             "Percibida 2019",
+                             "Justa 2019"))+
+  facet_wrap(~educacion_rec)
+
 gerente_obrero_educ
+gerente_obrero_educ_ci
 ggsave(gerente_obrero_educ, file="output/graphs/gerente_obrero_educ_exp.png", width = 12,height = 6)
+ggsave(gerente_obrero_educ_ci, file="output/graphs/gerente_obrero_educ_exp_ci.png", width = 12,height = 6)
 ```
 
 # Comparación internacional
@@ -1165,6 +1433,7 @@ cleveland_inter_year <- brecha_inter %>% filter(pais %nin% c("South Korea", "Can
   ggplot(aes(brecha, pais)) +
   theme_bw() +
   geom_point(aes(color = year, shape = year), size = 3) +
+  geom_vline(xintercept = 0)+
   xlab("Diferencia salarial percibida por género")+
   xlim(-50,50) +
   labs(colour = "Año", shape="Año")  +
@@ -1295,6 +1564,7 @@ cleveland_inter_year <- brecha_inter %>% filter(pais %nin% c("South Korea", "Can
   ggplot(aes(brecha, pais)) +
   theme_bw() +
   geom_point(aes(color = year, shape = year), size = 3) +
+  geom_vline(xintercept = 0)+
   xlab("Diferencia salarial justa por género")+
   xlim(-50,50) +
   labs(colour = "Año", shape="Año")  +
@@ -1445,3 +1715,71 @@ issp_reg_coefplot
 ggsave(issp_reg_coefplot, file="output/graphs/issp_reg_coefplot.png", width = 10, height = 7)
 ```
 
+###Regresion con interacciones
+```{r}
+ls_fl_quantiles <- c(0.25, 0.50, 0.75)
+fit_quantiles <- rq(brecha_perc ~ sex,
+               tau = ls_fl_quantiles,
+               data = dat)
+reg1.1 <- rq(brecha_perc ~ sex, data=dat)
+reg2.1 <- rq(brecha_perc ~ sex + educacion_rec, data=dat)
+reg3.1 <- rq(brecha_perc ~ sex*educacion_rec, data=dat)
+reg4.1 <- rq(brecha_perc ~ sex*educacion_rec + year, data=dat)
+reg5.1 <- rq(brecha_just ~ sex, data=dat)
+reg6.1 <- rq(brecha_just ~ sex + educacion_rec, data=dat)
+reg7.1 <- rq(brecha_just ~ sex*educacion_rec, data=dat)
+reg8.1 <- rq(brecha_just ~ sex*educacion_rec + year, data=dat)
+reg9.1 <- rq(brecha_just ~ sex*educacion_rec + year + brecha_perc, data=dat)
+
+screenreg(list(reg1.1, reg2.1, reg3.1,reg4.1, reg5.1, reg6.1, reg7.1, reg8.1, reg9.1))
+```
+
+R2
+
+```{r}
+fit0 <- rq(brecha_perc~1,data=dat)
+fit1 <- rq(brecha_just~1,data=dat)
+
+rho <- function(u,tau=.5)u*(tau - (u < 0))
+R1.1 <- 1 - reg1.1$rho/fit0$rho
+R2.1 <- 1 - reg2.1$rho/fit0$rho
+R3.1 <- 1 - reg3.1$rho/fit0$rho
+R4.1 <- 1 - reg4.1$rho/fit0$rho
+R5.1 <- 1 - reg5.1$rho/fit1$rho
+R6.1 <- 1 - reg6.1$rho/fit1$rho
+R7.1 <- 1 - reg7.1$rho/fit1$rho
+R8.1 <- 1 - reg8.1$rho/fit1$rho
+R9.1 <- 1 - reg9.1$rho/fit1$rho
+```
+
+
+```{r}
+htmlreg(list(reg1.1, reg2.1, reg3.1,reg4.1, reg5.1, reg6.1, reg7.1, reg8.1, reg9.1),
+        custom.header = list("Brecha percibida"=1:4, "Brecha justa"=5:9),
+        custom.model.names = c("Modelo 1",
+                               "Modelo 2",
+                               "Modelo 3",
+                               "Modelo 4",
+                               "Modelo 5",
+                               "Modelo 6",
+                               "Modelo 7",
+                               "Modelo 8",
+                               "Modelo 9"),
+        doctype = FALSE,
+        custom.note = "*** p < 0.001; ** p < 0.01; * p < 0.05", 
+        custom.coef.names = c("Intercepto", 
+                              "Mujer <br> <i>(Ref. Hombre)</i>",
+                              "Ed. media completa <br> <i>(Ref. Ed. media incompleta)</i>",
+                              "Educacion universitaria",
+                              "Mujer * Ed. media completa",
+                              "Mujer * Ed. universitaria",
+                              "2009 <br> <i>(Ref. año 1999)</i>",
+                              "2019",
+                              "Brecha percibida"),
+        caption = "",
+        caption.above = TRUE,
+        custom.gof.rows=list("R2" = c(R1.1,R2.1,R3.1,R4.1,R5.1,R6.1,R7.1,R8.1,R9.1)),
+        file = "output/tables/reg_brechas_interac.html")
+
+webshot::webshot(url ="output/tables/reg_brechas_interac.html", file ="output/tables/reg_brechas_interac.png")
+```
