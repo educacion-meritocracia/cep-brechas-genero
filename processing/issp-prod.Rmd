@@ -1584,13 +1584,15 @@ ggsave(cleveland_inter_year, file="output/graphs/cleveland_inter_year_just.png",
 ```{r}
 data3 <- chile_1999 %>% 
   dplyr::select(sex, 
-                educacion_rec, 
+                educacion_rec,
+                age,
                 brecha_perc=brecha_perc_1999, 
                 brecha_just=brecha_just_1999) %>%
   cbind(year=c("1999")) %>% as.data.frame()
 
 data3 <- na.omit(data3)
 data3$sex <- factor(data3$sex, labels = c("Hombre", "Mujer"))
+data3$age <- as.numeric(data3$age)
 ```
 
 * 2009
@@ -1598,12 +1600,14 @@ data3$sex <- factor(data3$sex, labels = c("Hombre", "Mujer"))
 ```{r}
 data2 <- chile_2009 %>% 
   dplyr::select(sex, 
-                educacion_rec, 
+                educacion_rec,
+                age,
                 brecha_perc=brecha_perc_2009, 
                 brecha_just=brecha_just_2009) %>%
   cbind(year=c("2009")) %>% as.data.frame()
 data2 <- na.omit(data2)
 data2$sex <- factor(data2$sex, labels = c("Hombre", "Mujer"))
+data2$age <- as.numeric(data2$age)
 ```
 
 * 2019
@@ -1611,12 +1615,14 @@ data2$sex <- factor(data2$sex, labels = c("Hombre", "Mujer"))
 ```{r}
 data <- chile_2019 %>% 
   dplyr::select(sex, 
-                educacion_rec, 
+                educacion_rec,
+                age,
                 brecha_perc=brecha_perc_2019, 
                 brecha_just=brecha_just_2019) %>%
   cbind(year=c("2019")) %>% as.data.frame()
 data <- na.omit(data)
 data$sex <- factor(data$sex, labels = c("Hombre", "Mujer"))
+data$age <- as.numeric(data$age)
 ```
 
 ```{r}
@@ -1725,13 +1731,15 @@ reg1.1 <- rq(brecha_perc ~ sex, data=dat)
 reg2.1 <- rq(brecha_perc ~ sex + educacion_rec, data=dat)
 reg3.1 <- rq(brecha_perc ~ sex*educacion_rec, data=dat)
 reg4.1 <- rq(brecha_perc ~ sex*educacion_rec + year, data=dat)
-reg5.1 <- rq(brecha_just ~ sex, data=dat)
-reg6.1 <- rq(brecha_just ~ sex + educacion_rec, data=dat)
-reg7.1 <- rq(brecha_just ~ sex*educacion_rec, data=dat)
-reg8.1 <- rq(brecha_just ~ sex*educacion_rec + year, data=dat)
-reg9.1 <- rq(brecha_just ~ sex*educacion_rec + year + brecha_perc, data=dat)
-
-screenreg(list(reg1.1, reg2.1, reg3.1,reg4.1, reg5.1, reg6.1, reg7.1, reg8.1, reg9.1))
+reg5.1 <- rq(brecha_perc ~ sex*educacion_rec + year + age, data=dat)
+reg6.1 <- rq(brecha_just ~ sex, data=dat)
+reg7.1 <- rq(brecha_just ~ sex + educacion_rec, data=dat)
+reg8.1 <- rq(brecha_just ~ sex*educacion_rec, data=dat)
+reg9.1 <- rq(brecha_just ~ sex*educacion_rec + year, data=dat)
+reg10.1 <- rq(brecha_just ~ sex*educacion_rec + year + age, data=dat)
+dat$year<-as.numeric(dat$year)
+reg11.1 <- rq(brecha_just ~ sex*educacion_rec + year + brecha_perc + age, data=dat)
+screenreg(list(reg1.1, reg2.1, reg3.1,reg4.1, reg5.1, reg6.1, reg7.1, reg8.1, reg9.1, reg10.1, reg11.1))
 ```
 
 R2
@@ -1745,17 +1753,19 @@ R1.1 <- 1 - reg1.1$rho/fit0$rho
 R2.1 <- 1 - reg2.1$rho/fit0$rho
 R3.1 <- 1 - reg3.1$rho/fit0$rho
 R4.1 <- 1 - reg4.1$rho/fit0$rho
-R5.1 <- 1 - reg5.1$rho/fit1$rho
+R5.1 <- 1 - reg5.1$rho/fit0$rho
 R6.1 <- 1 - reg6.1$rho/fit1$rho
 R7.1 <- 1 - reg7.1$rho/fit1$rho
 R8.1 <- 1 - reg8.1$rho/fit1$rho
 R9.1 <- 1 - reg9.1$rho/fit1$rho
+R10.1 <- 1 - reg10.1$rho/fit1$rho
+R11.1 <- 1 - reg11.1$rho/fit1$rho
 ```
 
 
 ```{r}
-htmlreg(list(reg1.1, reg2.1, reg3.1,reg4.1, reg5.1, reg6.1, reg7.1, reg8.1, reg9.1),
-        custom.header = list("Brecha percibida"=1:4, "Brecha justa"=5:9),
+htmlreg(list(reg1.1, reg2.1, reg3.1,reg4.1, reg5.1, reg6.1, reg7.1, reg8.1, reg9.1, reg10.1, reg11.1),
+        custom.header = list("Brecha percibida"=1:5, "Brecha justa"=6:11),
         custom.model.names = c("Modelo 1",
                                "Modelo 2",
                                "Modelo 3",
@@ -1764,7 +1774,9 @@ htmlreg(list(reg1.1, reg2.1, reg3.1,reg4.1, reg5.1, reg6.1, reg7.1, reg8.1, reg9
                                "Modelo 6",
                                "Modelo 7",
                                "Modelo 8",
-                               "Modelo 9"),
+                               "Modelo 9",
+                               "Modelo 10",
+                               "Modelo 11"),
         doctype = FALSE,
         custom.note = "*** p < 0.001; ** p < 0.01; * p < 0.05", 
         custom.coef.names = c("Intercepto", 
@@ -1775,11 +1787,18 @@ htmlreg(list(reg1.1, reg2.1, reg3.1,reg4.1, reg5.1, reg6.1, reg7.1, reg8.1, reg9
                               "Mujer * Ed. universitaria",
                               "2009 <br> <i>(Ref. año 1999)</i>",
                               "2019",
-                              "Brecha percibida"),
+                              "Edad",
+                              "Brecha percibida"
+                              ),
         caption = "",
         caption.above = TRUE,
-        custom.gof.rows=list("R2" = c(R1.1,R2.1,R3.1,R4.1,R5.1,R6.1,R7.1,R8.1,R9.1)),
+        custom.gof.rows=list("R2" = c(R1.1,R2.1,R3.1,R4.1,R5.1,R6.1,R7.1,R8.1,R9.1, R10.1, R11.1)),
         file = "output/tables/reg_brechas_interac.html")
 
-webshot::webshot(url ="output/tables/reg_brechas_interac.html", file ="output/tables/reg_brechas_interac.png")
+webshot2::webshot(url ="output/tables/reg_brechas_interac.html", file ="output/tables/reg_brechas_interac.png")
 ```
+
+```{r}
+sjPlot::plot_model(reg11.1, type = "int")
+```
+

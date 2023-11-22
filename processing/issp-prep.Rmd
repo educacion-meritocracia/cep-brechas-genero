@@ -372,7 +372,7 @@ summary(chile_2019$v14) # original
 chile_2019 <- chile_2019 %>% set_na(., na = c(-9), drop.levels = FALSE, as.tag = FALSE)
 summary(chile_2019$v14)
 
-chile_2019 <- set_label(chile_2019, c("WEIGHT", "Educacion", "Sexo", "Percibido: Doctor", "Percibido: Gerente", "Percibido: Asistente de tienda", "Percibido: Obrero", "Percibido: Ministro de Gobierno", "Justo: Doctor", "Justo: Gerente", "Justo: Asistente de tienda", "Justo: Obrero", "Justo: Ministro de Gobierno"))
+chile_2019 <- set_label(chile_2019, c("WEIGHT", "Educacion", "Sexo", "Edad", "Region", "Percibido: Doctor", "Percibido: Gerente", "Percibido: Asistente de tienda", "Percibido: Obrero", "Percibido: Ministro de Gobierno", "Justo: Doctor", "Justo: Gerente", "Justo: Asistente de tienda", "Justo: Obrero", "Justo: Ministro de Gobierno"))
 ```
 
 * Educacion
