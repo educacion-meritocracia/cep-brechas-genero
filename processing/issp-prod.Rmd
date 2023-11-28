@@ -218,6 +218,8 @@ box_perc<-boxplot_perc %>%  ggplot(aes(x=oficio, y=value, pattern=year, fill=yea
  
 box_perc
 ggsave(box_perc, file="output/graphs/box_perc.png", width = 7,height = 7)
+## CEP
+ggsave(box_perc, file="output/graphs/cep/box_perc.eps", width = 7,height = 7)
 ```
 
 ```{r}
@@ -262,6 +264,8 @@ box_just<-boxplot_just %>%  ggplot(aes(x=oficio, y=value, pattern=year, fill=yea
 
 box_just
 ggsave(box_just, file="output/graphs/box_just.png", width = 7,height = 7)
+## CEP
+ggsave(box_just, file="output/graphs/cep/box_just.eps", width = 7,height = 7)
 ```
 
 ```{r}
@@ -294,6 +298,8 @@ box_brecha <- ggplot(boxplot_brecha, aes(x=brecha, y=value, pattern=year, fill=y
 
 box_brecha
 ggsave(box_brecha, file="output/graphs/box_brecha.png", width = 7,height = 7)
+## CEP
+ggsave(box_brecha, file="output/graphs/cep/box_brecha.eps", width = 7,height = 7)
 ```
 
 ### ajustar boxplot según inflación
@@ -372,6 +378,8 @@ box_perc_ipc<-boxplot_perc_ipc %>%  ggplot(aes(x=oficio, y=value, pattern=year, 
  
 box_perc_ipc
 ggsave(box_perc_ipc, file="output/graphs/box_perc_ipc.png", width = 7,height = 7)
+## CEP
+ggsave(box_perc_ipc, file="output/graphs/cep/box_perc_ipc.eps", width = 7,height = 7)
 ```
 
 ```{r}
@@ -448,6 +456,8 @@ box_just_ipc<-boxplot_just_ipc %>%  ggplot(aes(x=oficio, y=value, pattern=year, 
  
 box_just_ipc
 ggsave(box_just_ipc, file="output/graphs/box_just_ipc.png", width = 7,height = 7)
+## CEP
+ggsave(box_just_ipc, file="output/graphs/cep/box_just_ipc.eps", width = 7,height = 7)
 ```
 
 
@@ -464,7 +474,7 @@ df<- dfSummary(descr_1999_ipc,
                na.col = T,    # missing
                graph.col = T, # plot
                valid.col = T, # n valido
-               col.widths = c(1000,10,10,10,10,10))
+               col.widths = c(1000,10,10,10,10))
 df$Variable <- NULL # delete variable column
 view(df,file = "output/tables/desc99.html")
 webshot::webshot(url ="output/tables/desc99.html" ,file ="output/tables/desc99.png")
@@ -739,7 +749,11 @@ plot_percibido_ci <- salario_percibido %>%
 plot_percibido
 plot_percibido_ci
 ggsave(plot_percibido, file="output/graphs/issp_percibido_exp.png", width = 10,height = 7)
+## CEP
+ggsave(plot_percibido, file="output/graphs/cep/issp_percibido_exp.eps", width = 7,height = 7)
 ggsave(plot_percibido_ci, file="output/graphs/issp_percibido_exp_ci.png", width = 10,height = 7)
+## CEP
+ggsave(plot_percibido_ci, file="output/graphs/cep/issp_percibido_exp_ci.eps", width = 7,height = 7)
 ```
 
 * Salario justo
@@ -878,7 +892,12 @@ plot_justo_ci <- salario_justo %>%
 plot_justo
 plot_justo_ci
 ggsave(plot_justo, file="output/graphs/issp_justo_exp.png", width = 10,height = 7)
+## CEP
+ggsave(plot_justo, file="output/graphs/cep/issp_justo_exp.eps", width = 7,height = 7)
+
 ggsave(plot_justo_ci, file="output/graphs/issp_justo_exp_ci.png", width = 10,height = 7)
+## CEP
+ggsave(plot_justo_ci, file="output/graphs/cep/issp_justo_exp_ci.eps", width = 7,height = 7)
 ```
 
 ### Brechas gerente/obrero
@@ -980,7 +999,12 @@ gerente_obrero_ci <- ggplot(base, aes(x = year, y = mean, color=sexo)) +
 gerente_obrero
 gerente_obrero_ci
 ggsave(gerente_obrero, file="output/graphs/gerente_obrero_exp.png", width = 10, height = 7)
+## CEP
+ggsave(gerente_obrero, file="output/graphs/cep/gerente_obrero_exp.eps", width = 7,height = 7)
+
 ggsave(gerente_obrero_ci, file="output/graphs/gerente_obrero_exp_ci.png", width = 10, height = 7)
+## CEP
+ggsave(gerente_obrero_ci, file="output/graphs/cep/gerente_obrero_exp_ci.eps", width = 7,height = 7)
 ```
 
 ### brechas log(gerente/obrero)
@@ -1034,6 +1058,8 @@ loggerente_obrero <- ggplot(base_log, aes(x = year, y = mean, color=sexo)) +
 
 loggerente_obrero
 ggsave(loggerente_obrero, file="output/graphs/loggerente_obrero_exp.png", width = 8, height = 5)
+## CEP
+ggsave(loggerente_obrero, file="output/graphs/cep/loggerente_obrero_exp.eps", width = 7,height = 7)
 ```
 
 # Relación entre diferencias de ingreso, sexo y educación
@@ -1142,7 +1168,12 @@ gerente_obrero_educ_ci <- ggplot(base_educ, aes(x = year, y = mean, color=sexo))
 gerente_obrero_educ
 gerente_obrero_educ_ci
 ggsave(gerente_obrero_educ, file="output/graphs/gerente_obrero_educ_exp.png", width = 12,height = 6)
+## CEP
+ggsave(gerente_obrero_educ, file="output/graphs/cep/gerente_obrero_educ_exp.eps", width = 7,height = 7)
+
 ggsave(gerente_obrero_educ_ci, file="output/graphs/gerente_obrero_educ_exp_ci.png", width = 12,height = 6)
+## CEP
+ggsave(gerente_obrero_educ_ci, file="output/graphs/cep/gerente_obrero_educ_exp_ci.eps", width = 7,height = 7)
 ```
 
 # Comparación internacional
@@ -1320,6 +1351,8 @@ cleveland_2019 <- brecha_2019_ord %>% filter(year=="brecha_perc_2019") %>%
 
 cleveland_2019
 ggsave(cleveland_2019, file="output/graphs/cleveland2019_percibida.png", width = 7,height = 7)
+## CEP
+ggsave(cleveland_2019, file="output/graphs/cep/cleveland2019_percibida.eps", width = 7,height = 7)
 ```
 
 ### Scatterplot brecha percibida vs objetiva (WEF)
@@ -1351,6 +1384,8 @@ scatterplot_percibida <- ggplot(diferencia, aes(x = brecha_objetiva, y = brecha)
 scatterplot_percibida
 
 ggsave(scatterplot_percibida, file="output/graphs/scatterplot_percibida_WEF.png", width = 7,height = 7)
+## CEP
+ggsave(scatterplot_percibida, file="output/graphs/cep/scatterplot_percibida_WEF.eps", width = 7,height = 7)
 ```
 
 ### Scatterplot brecha percibida vs objetiva (OCDE)
@@ -1384,6 +1419,8 @@ scatterplot_percibida
 cor(diferencia$brecha, diferencia$brecha_objetiva)
 
 ggsave(scatterplot_percibida, file="output/graphs/scatterplot_percibida_OCDE.png", width = 7, height = 7)
+## CEP
+ggsave(scatterplot_percibida, file="output/graphs/cep/scatterplot_percibida_OCDE.eps", width = 7,height = 7)
 ```
 
 ### Cleveland con los tres años
@@ -1444,6 +1481,8 @@ cleveland_inter_year <- brecha_inter %>% filter(pais %nin% c("South Korea", "Can
 
 cleveland_inter_year
 ggsave(cleveland_inter_year, file="output/graphs/cleveland_inter_year_perc.png", width = 7,height = 7)
+## CEP
+ggsave(cleveland_inter_year, file="output/graphs/cep/cleveland_inter_year.eps", width = 7,height = 7)
 ```
 
 ## Brecha justa
@@ -1472,6 +1511,8 @@ cleveland_2019 <- brecha_2019_just %>% filter(year=="brecha_just_2019") %>%
 
 cleveland_2019
 ggsave(cleveland_2019, file="output/graphs/cleveland2019_justa.png", width = 7,height = 7)
+## CEP
+ggsave(cleveland_2019, file="output/graphs/cep/cleveland2019_justa.eps", width = 7,height = 7)
 ```
 
 ### Scatterplot brecha percibida vs objetiva (WEF)
@@ -1503,6 +1544,8 @@ scatterplot_justa <- ggplot(diferencia, aes(x = brecha_objetiva, y = brecha)) +
 scatterplot_justa
 
 ggsave(scatterplot_justa, file="output/graphs/scatterplot_justa_WEF.png", width = 10,height = 7)
+## CEP
+ggsave(scatterplot_justa, file="output/graphs/cep/scatterplot_justa_WEF.eps", width = 7,height = 7)
 ```
 
 ### Scatterplot brecha percibida vs objetiva (OCDE)
@@ -1534,6 +1577,8 @@ scatterplot_justa <- ggplot(diferencia, aes(x = brecha_objetiva, y = brecha)) +
 scatterplot_justa
 
 ggsave(scatterplot_justa, file="output/graphs/scatterplot_justa_OCDE.png", width = 7, height = 7)
+## CEP
+ggsave(scatterplot_justa, file="output/graphs/cep/scatterplot_justa_OCDE.eps", width = 7,height = 7)
 ```
 
 ### Cleveland con los tres años
@@ -1575,6 +1620,8 @@ cleveland_inter_year <- brecha_inter %>% filter(pais %nin% c("South Korea", "Can
 
 cleveland_inter_year
 ggsave(cleveland_inter_year, file="output/graphs/cleveland_inter_year_just.png", width = 7,height = 7)
+## CEP
+ggsave(cleveland_inter_year, file="output/graphs/cep/cleveland_inter_year_just.eps", width = 7,height = 7)
 ```
 
 # Regresiones
@@ -1763,7 +1810,7 @@ R11.1 <- 1 - reg11.1$rho/fit1$rho
 ```
 
 
-```{r}
+```{r eval=FALSE}
 htmlreg(list(reg1.1, reg2.1, reg3.1,reg4.1, reg5.1, reg6.1, reg7.1, reg8.1, reg9.1, reg10.1, reg11.1),
         custom.header = list("Brecha percibida"=1:5, "Brecha justa"=6:11),
         custom.model.names = c("Modelo 1",
