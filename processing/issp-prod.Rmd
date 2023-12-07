@@ -214,7 +214,8 @@ box_perc<-boxplot_perc %>%  ggplot(aes(x=oficio, y=value, pattern=year, fill=yea
   scale_pattern_manual(values = c("1999" = "stripe", "2009" = "none", "2019" = "none"), guide = "Año") +
    labs(fill="Año",
         pattern="Año")+
-  theme_bw()
+  theme_bw()+
+  theme(axis.text.x = element_text(margin = margin(b = 15)))
  
 box_perc
 ggsave(box_perc, file="output/graphs/box_perc.png", width = 7,height = 7)
@@ -260,7 +261,8 @@ box_just<-boxplot_just %>%  ggplot(aes(x=oficio, y=value, pattern=year, fill=yea
   scale_pattern_manual(values = c("1999" = "stripe", "2009" = "none", "2019" = "none"), guide = "Año") +
    labs(fill="Año",
         pattern="Año")+
-  theme_bw()
+  theme_bw()+
+  theme(axis.text.x = element_text(margin = margin(b = 15)))
 
 box_just
 ggsave(box_just, file="output/graphs/box_just.png", width = 7,height = 7)
@@ -294,7 +296,8 @@ box_brecha <- ggplot(boxplot_brecha, aes(x=brecha, y=value, pattern=year, fill=y
   scale_pattern_manual(values = c("1999" = "stripe", "2009" = "none", "2019" = "none"), guide = "Año") +
    labs(fill="Año",
         pattern="Año")+
-  theme_bw()
+  theme_bw()+
+  theme(axis.text.x = element_text(margin = margin(b = 15)))
 
 box_brecha
 ggsave(box_brecha, file="output/graphs/box_brecha.png", width = 7,height = 7)
@@ -374,7 +377,8 @@ box_perc_ipc<-boxplot_perc_ipc %>%  ggplot(aes(x=oficio, y=value, pattern=year, 
   scale_pattern_manual(values = c("1999" = "stripe", "2009" = "none", "2019" = "none"), guide = "Año") +
    labs(fill="Año",
         pattern="Año")+
-  theme_bw()
+  theme_bw()+
+  theme(axis.text.x = element_text(margin = margin(b = 15)))
  
 box_perc_ipc
 ggsave(box_perc_ipc, file="output/graphs/box_perc_ipc.png", width = 7,height = 7)
@@ -452,7 +456,8 @@ box_just_ipc<-boxplot_just_ipc %>%  ggplot(aes(x=oficio, y=value, pattern=year, 
   scale_pattern_manual(values = c("1999" = "stripe", "2009" = "none", "2019" = "none"), guide = "Año") +
    labs(fill="Año",
         pattern="Año")+
-  theme_bw()
+  theme_bw()+
+  theme(axis.text.x = element_text(margin = margin(b = 15)))
  
 box_just_ipc
 ggsave(box_just_ipc, file="output/graphs/box_just_ipc.png", width = 7,height = 7)
@@ -1482,7 +1487,7 @@ cleveland_inter_year <- brecha_inter %>% filter(pais %nin% c("South Korea", "Can
 cleveland_inter_year
 ggsave(cleveland_inter_year, file="output/graphs/cleveland_inter_year_perc.png", width = 7,height = 7)
 ## CEP
-ggsave(cleveland_inter_year, file="output/graphs/cep/cleveland_inter_year.eps", width = 7,height = 7)
+ggsave(cleveland_inter_year, file="output/graphs/cep/cleveland_inter_year_perc.eps", width = 7,height = 7)
 ```
 
 ## Brecha justa
